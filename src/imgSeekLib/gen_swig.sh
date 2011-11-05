@@ -1,1 +1,1 @@
-swig -Wall -c++ -java -package net.imgseek.services.imgdb -o imgdb_wrap.h imgdb.i
+swig -Wall -c++ -python imgdb.i
