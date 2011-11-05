@@ -1,0 +1,9 @@
+Credits for isk-daemon 
+======================
+
+Developers
+==========
+
+Ricardo Niederberger Cabral
+ricardo.cabral|at|imgseek.net
+Admin / Lead Developer

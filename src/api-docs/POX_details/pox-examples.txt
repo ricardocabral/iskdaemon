@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<result_images target_image="18446744073709551615" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <!--'Sequence' block, maxOccurs=unbounded-->
+    <result_image>
+        <image id="18446744073709551615"/>
+        <ratio>-1E4</ratio>
+    </result_image>
+    <result_image>
+        <image id="18446744073709551615"/>
+        <ratio>-1E4</ratio>
+    </result_image>
+    <result_image>
+        <image id="18446744073709551615"/>
+        <ratio>-1E4</ratio>
+    </result_image>
+</result_images>
+ 
+ 
+ 
+
+<?xml version="1.0"?>
+<new_image_batch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <passw>ee</passw>
+    <!--'Sequence' block, maxOccurs=unbounded-->
+    <new_image>
+        <image id="18446744073709551615" dbid="1"/>
+        <path>string</path>
+    </new_image>
+    <new_image>
+        <image id="18446744073709551615" dbid="1"/>
+        <path>string</path>
+    </new_image>
+    <new_image>
+        <image id="18446744073709551615" dbid="1"/>
+        <path>string</path>
+    </new_image>
+</new_image_batch>
+ 
+ 
+ 
+<?xml version="1.0"?>
+<new_image_batch_result xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <new_image_result>
+        <new_image>
+            <image id="18446744073709551615 dbid="1""/>
+            <path>string</path>
+        </new_image>
+        <status>4294967295</status>
+    </new_image_result>
+    <new_image_result>
+        <new_image>
+            <image id="18446744073709551615 dbid="1""/>
+            <path>string</path>
+        </new_image>
+        <status>4294967295</status>
+    </new_image_result>
+    <new_image_result>
+        <new_image>
+            <image id="18446744073709551615 dbid="1""/>
+            <path>string</path>
+        </new_image>
+        <status>4294967295</status>
+    </new_image_result>
+</new_image_batch_result>
+
+
+<?xml version="1.0"?>
+<image_query results="12" type="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <passw>ee</passw>
+    <!--Attribute type is optional-->
+    <!--Attribute results is optional-->
+    <image id="18446744073709551615" dbid="1"/>
+</image_query>
+
+
+<?xml version="1.0"?>
+<image_remove_batch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <passw>ee</passw>
+    <!--'Sequence' block, maxOccurs=unbounded-->
+    <image id="18446744073709551615" dbid="1"/>
+    <image id="18446744073709551615" dbid="1"/>
+    <image id="18446744073709551615" dbid="1"/>
+</image_remove_batch>
+
+
+<?xml version="1.0"?>
+<image_remove_batch_result xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <image_remove_result>
+        <image id="18446744073709551615" dbid="1"/>
+        <status>4294967295</status>
+    </image_remove_result>
+    <image_remove_result>
+        <image id="18446744073709551615" dbid="1"/>
+        <status>4294967295</status>
+    </image_remove_result>
+    <image_remove_result>
+        <image id="18446744073709551615" dbid="1"/>
+        <status>4294967295</status>
+    </image_remove_result>
+</image_remove_batch_result>
+
+
+<?xml version="1.0"?>
+<save_database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+    <passw>ee</passw>
+</save_database>
+
+
+<?xml version="1.0"?>
+<save_database_result status="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="isk.xsd">
+</save_database_result>

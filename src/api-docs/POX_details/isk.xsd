@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="result_images">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+          <xs:element ref="result_image"/>
+      </xs:sequence>
+      <xs:attribute name="target_image" use="required" type="xs:unsignedLong"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="image">
+    <xs:complexType>
+    	<xs:attribute name="id" use="required" type="xs:unsignedLong">
+    		<xs:simpleType />
+    	</xs:attribute>
+    	<xs:attribute name="dbid" type="xs:unsignedInt" use="required"></xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="result_image">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element ref="image"/>
+              <xs:element name="ratio" type="xs:float"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="new_image">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element ref="image"/>
+              <xs:element name="path" type="xs:string"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="new_image_batch">
+      <xs:complexType>
+          <xs:sequence maxOccurs="unbounded">
+              <xs:element ref="new_image"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="new_image_batch_result">
+      <xs:complexType>
+          <xs:sequence minOccurs="1">
+              <xs:element ref="new_image_result" maxOccurs="unbounded"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="new_image_result">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element ref="new_image"/>
+              <xs:element name="status" type="xs:unsignedInt"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="image_query">
+      <xs:complexType>
+      	<xs:sequence>
+      		<xs:element ref="image" />
+      	</xs:sequence>
+      	<xs:attribute name="results" type="xs:unsignedInt"
+      		default="12" />
+      	<xs:attribute name="type" type="xs:unsignedInt" default="1" />
+      	<xs:attribute name="dbid" type="xs:unsignedInt" use="required"></xs:attribute>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="image_remove_batch">
+      <xs:complexType>
+          <xs:sequence maxOccurs="unbounded">
+              <xs:element ref="image"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="image_remove_result">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element ref="image"/>
+              <xs:element name="status" type="xs:unsignedInt"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="image_remove_batch_result">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element ref="image_remove_result" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="image_query_sig">
+      <xs:complexType>
+          <xs:attribute name="data" type="xs:string" use="required"/>
+          <xs:attribute name="results" type="xs:unsignedInt" default="12"/>
+      </xs:complexType>
+  </xs:element>
+
+
+
+    <xs:element name="save_database"><xs:complexType></xs:complexType></xs:element>
+
+    <xs:element name="save_database_result">
+    	<xs:complexType>
+    		<xs:attribute name="status" type="xs:unsignedInt"></xs:attribute>
+    	</xs:complexType></xs:element>
+</xs:schema>
