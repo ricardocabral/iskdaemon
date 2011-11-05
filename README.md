@@ -6,11 +6,18 @@ isk-daemon is an open source standalone server and library capable of adding con
 
 # Credits
 
-Ricardo Niederberger Cabral (ricardo at isnotworking.com)
+imgSeek and isk-daemon portions copyright Ricardo Niederberger Cabral.
+(ricardo at isnotworking.com)
+
+Image loading code is credited to "ImageMagick Studio LLC" and library linkage adheres to statements on ImageMagick-License.txt
 
 # More details
 
-http://server.imgseek.net/
+Installation and usage instructions are available online.
+
+Client libraries and other notes available at directory "docs/"
+
+For more details please refer to http://server.imgseek.net/.
 
 # Donate
 
