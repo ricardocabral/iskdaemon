@@ -20,7 +20,7 @@ except:
     sys.exit(1)
 
 ############## Init some vars
-extra_compile_args=["-O3", "-qstrict", "-DLinuxBuild"] #optimize but don't alter semantics
+extra_compile_args=["-O3", "-DLinuxBuild"] #optimize but don't alter semantics
 library_dirs = []
 include_dirs = []
 libraries = []
