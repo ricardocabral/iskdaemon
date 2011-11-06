@@ -20,21 +20,11 @@ except:
     sys.exit(1)
 
 ############## Init some vars
-extra_compile_args=["-O3","-DLinuxBuild","-DISK_SWIG_JAVA"]
-
-if platform.system() == 'Linux':
-    # Linux
-    extra_link_args=['/usr/lib/jvm/java-6-sun/jre/lib/amd64/server/libjvm.so']
-    include_dirs = ['/usr/lib/jvm/java-6-sun/include/','/usr/lib/jvm/java-6-sun/include/linux/']
-
-if platform.system() == 'Darwin':
-    # OS x
-    extra_link_args=[
-        '-framework JavaVM','/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Libraries/libjvm.dylib']
-    include_dirs = ['/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Headers/']
-
+extra_compile_args=["-O3", "-qstrict", "-DLinuxBuild"] #optimize but don't alter semantics
 library_dirs = []
+include_dirs = []
 libraries = []
+extra_link_args = []
 
 hasIMagick=0
 print "#################################### Check ImageMagick"
@@ -54,7 +44,7 @@ try:
             IMagCLib=split(IMagCLib,' ')
             hasIMagick=1
     else:
-        print "--- WARNING ---\nUnable to find Magick++-config. Are you sure you have ImageMagick and it's development files installed correctly ?\nIgnore this warning if QT development files were previously detected."
+        print "--- WARNING ---\nUnable to find Magick++-config. Are you sure you have ImageMagick and it's development files installed correctly?"
 except:
     traceback.print_exc()
 

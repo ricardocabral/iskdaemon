@@ -44,7 +44,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 using namespace std;
 /* ImageMagick includes */
 #include <magick/api.h>
-//using namespace Magick;
 
 /* imgSeek includes */
 
@@ -57,13 +56,7 @@ using namespace std;
     #include "imgdb_wrap.h"
 #else
     /* Python interface */
-    #include "imgdb_python_wrap.h"
-
-    // #ifdef _WINDOWS
-    // #include "imgdb_python_wrap.h"
-    // #else
-    // #include "imgdb_python_linux_wrap.h"
-    // #endif
+    #include "imgdb_wrap.cxx"
 #endif
 
 //TODO reactivate fast jpeg loader: http://trac.xapian.org/browser/branches/imgseek/xapian-extras/imgseek
