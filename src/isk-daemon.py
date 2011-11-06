@@ -29,17 +29,21 @@ import md5
 import atexit
  
 # isk-daemon imports
-from imgSeekLib.ImageDB import ImgDB
 import settings
+from imgSeekLib.ImageDB import ImgDB
 from imgSeekLib import statistics
 from imgSeekLib import utils
 from imgSeekLib import daemonize
-#from imgSeekLib import memoize
 from imgSeekLib.urldownloader import urlToFile
 from imgSeekLib.blockon import blockOn
 
 # TwistedMatrix imports
-from twisted.web import soap, xmlrpc, resource, server, static
+from twisted.web import xmlrpc, resource, server, static
+has_soap = True
+try:
+    from twisted.web import soap
+except:
+    has_soap = False
 from twisted.spread import pb
 from twisted.internet import reactor
 from twisted.internet.error import *
@@ -789,9 +793,13 @@ class XMLRPCIskResource(xmlrpc.XMLRPC):
     """Will be injected with XML-RPC remote facade methods later"""
     pass
 
-class SOAPIskResource(soap.SOAPPublisher):
-    """Will be injected with SOAP remote facade methods later"""
-    pass
+SOAPIskResource = None
+
+if has_soap:
+    class nSOAPIskResource(soap.SOAPPublisher):
+        """Will be injected with SOAP remote facade methods later"""
+        pass
+    SOAPIskResource = nSOAPIskResource
         
 class DataExportResource(resource.Resource):
     """Bulk data export remote facade"""    
@@ -872,7 +880,8 @@ class ServiceFacade(pb.Root):
             reactor.callLater(ServiceFacade.peerRefreshRate, self.refreshPeers) #IGNORE:E1101
             rootLog.info('| Running in cluster mode')            
         else:
-            rootLog.info('| Cluster mode disabled')
+            pass
+            #rootLog.info('| Cluster mode disabled')  #TODO uncomment when clustering works
 
     def peerFailed(self, reason, iskClient):
         rootLog.warn("Peer failed: "+iskClient.addr+" : "+str(reason))
@@ -1011,9 +1020,16 @@ def startIskDaemon():
     XMLRPCIskResourceInstance = XMLRPCIskResource()
     injectCommonDatabaseFacade(XMLRPCIskResourceInstance, 'xmlrpc_')
 
-    SOAPIskResourceInstance = SOAPIskResource()
-    injectCommonDatabaseFacade(SOAPIskResourceInstance, 'soap_')
+    if has_soap:
+        SOAPIskResourceInstance = SOAPIskResource()
+        injectCommonDatabaseFacade(SOAPIskResourceInstance, 'soap_')
     
+        # expose remote command interfaces
+        root.putChild('SOAP', SOAPIskResourceInstance)
+        rootLog.info('| listening for SOAP requests at http://localhost:%d/SOAP'% settings.basePort)
+    else:
+        rootLog.info('| Not listening for SOAP requests. Installing "SOAPpy" python package to enable it.')
+
     global ServiceFacadeInstance
     ServiceFacadeInstance = ServiceFacade(settings)
     injectCommonDatabaseFacade(ServiceFacadeInstance, 'remote_')
@@ -1022,27 +1038,24 @@ def startIskDaemon():
     root.putChild('RPC', XMLRPCIskResourceInstance)
     rootLog.info('| listening for XML-RPC requests at http://localhost:%d/RPC'% settings.basePort)
 
-    root.putChild('SOAP', SOAPIskResourceInstance)
-    rootLog.info('| listening for SOAP requests at http://localhost:%d/SOAP'% settings.basePort)
-
     root.putChild('export', DataExportResource())
     rootLog.debug('| listening for data export requests at http://localhost:%d/export'% settings.basePort)
 
     # start twisted reactor
     try:
-        reactor.listenTCP(settings.basePort, server.Site(root)) #IGNORE:E1101
+        reactor.listenTCP(settings.basePort, server.Site(root)) 
         rootLog.info('| HTTP service endpoints started. Binded to all local network interfaces.')
     except CannotListenError:
         rootLog.error("Socket port %s seems to be in use, is there another instance already running ? Try supplying a different one on the command line as the first argument. Cannot start isk-daemon." % settings.basePort)
         return
         
     rootLog.debug('+- Starting internal service endpoint...')
-    reactor.listenTCP(settings.basePort+100, pb.PBServerFactory(ServiceFacadeInstance)) #IGNORE:E1101
+    reactor.listenTCP(settings.basePort+100, pb.PBServerFactory(ServiceFacadeInstance)) 
     rootLog.debug('| internal service listener started at pb://localhost:%d'% (settings.basePort+100))
     rootLog.info('| Binded to all local network interfaces.')
     
     rootLog.info('+ init finished. Waiting for requests ...')
-    reactor.run() #IGNORE:E1101
+    reactor.run() 
 
 if __name__ == "__main__":
     startIskDaemon()
