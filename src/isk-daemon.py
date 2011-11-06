@@ -717,18 +717,11 @@ def getGlobalServerStats():
     
     stats = {}
     
-    #stats['Machine uptime'] = statistics.human_readable(statistics.uptime())
     stats['isk-daemon uptime'] = statistics.human_readable(time.time() - daemonStartTime)
     stats['Number of databases'] = len(imgDB.getDBList())
-    """
-    stats['Machine uptime']        dbImageQueries = imgDB.queryCount()
-    stats['Machine uptime']        dbImageQueryPerMin = imgDB.queryPerMinCount()
-    stats['Machine uptime']        dbImageAdds = imgDB.addCount()
-    stats['Machine uptime']        dbImageAddsPerMin = imgDB.addPerMinCount()
-    """    
-    stats['Total memory usage']        = statistics.memory()
-    stats['Resident memory usage']     = statistics.resident()
-    stats['Stack memory usage']      = statistics.stacksize()    
+    stats['Total memory usage'] = statistics.memory()
+    stats['Resident memory usage'] = statistics.resident()
+    stats['Stack memory usage'] = statistics.stacksize()    
     
     return stats
 
