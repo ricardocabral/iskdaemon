@@ -35,7 +35,6 @@ from imgSeekLib import statistics
 from imgSeekLib import utils
 from imgSeekLib import daemonize
 from imgSeekLib.urldownloader import urlToFile
-from imgSeekLib.blockon import blockOn
 
 # TwistedMatrix imports
 from twisted.web import xmlrpc, resource, server, static
@@ -86,7 +85,7 @@ def queryImgID(dbId, id, numres=12, fast=False):
             if iskc.hasImgId(dbId, id): # remote instance has this image. Forward query
                 try:
                     d = iskc.root.callRemote("queryImgID", dbId,id,numres,fast)
-                    return blockOn(d)
+                    return d #TODO this was using blockOn(d)
                 except Exception, e:
                     #TODO peer failure should be noticed
                     #self.peerFailed(e,iskClient)
@@ -963,8 +962,6 @@ def fixSettings():
     """    
     if os.name == 'nt': # fix windows stuff
         settings.databasePath = settings.databasePath.replace('/','\\')
-
-from zope.interface import implements, Interface, Attribute
 
 def startIskDaemon():    
     """ cmd-line daemon entry-point
