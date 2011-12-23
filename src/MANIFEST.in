@@ -1,11 +1,9 @@
-include imgSeekLib/*.so
-include imgSeekLib/*.pyd
-include README.html
-include AUTHORS
-include COPYING
+include AUTHORS.txt
+include COPYING.txt
 include ImageMagick-License.txt
-recursive-include docs *
+recursive-include api-docs *
 recursive-include www *
+recursive-include test *
 prune .svn 
 prune */.svn
 prune */*/.svn
@@ -15,5 +13,4 @@ global-exclude *~
 global-exclude *.tmp
 global-exclude *.bak
 global-exclude *.pyc
-global-exclude test/*
 global-exclude *.old

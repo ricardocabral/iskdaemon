@@ -13,14 +13,14 @@ else: # linux
     imgSeekLib_package_data = ['*.so']
     
 setup(name="isk-daemon",
-      version='0.7',
+      version='0.8',
       description="Server and library for adding content-based (visual) image searching to any image related website or software.",
       long_description ="This technology allows users of any image-related website or software to sketch on a widget which image they want to find and have the website reply to them the most similar images or simply request for more similar photos at each image detail page.",
       keywords = "imgseek iskdaemon image cbir imagedatabase isk-daemon database searchengine",
       author="Ricardo Niederberger Cabral",
       author_email="ricardo.cabral at imgseek.net",
       url="http://server.imgseek.net/",
-      download_url = "http://server.imgseek.net/category/download/",
+      download_url = "http://www.imgseek.net/isk-daemon/download",
       platforms = ['Linux','Windows','Mac OSX'],
       license = 'GPLv2',
       packages=['imgSeekLib'],
@@ -33,7 +33,4 @@ setup(name="isk-daemon",
                           ],
       dependency_links = ["http://sourceforge.net/project/showfiles.php?group_id=26590&package_id=18246",
                          ],
-
-
      )
-
