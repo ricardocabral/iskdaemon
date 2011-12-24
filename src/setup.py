@@ -11,9 +11,9 @@ if os.name == 'nt': # fix windows stuff
     imgSeekLib_package_data = ['*.dll']
 else: # linux
     imgSeekLib_package_data = ['*.so']
-   
 
-#!/usr/bin/env python
+with open('README.txt') as file:
+    long_description = file.read()
 
 #############################[ Parameters you should change if install failed ]#########################################
 # python_dir should point to the directory where Python header files may be found.. (Inside this dir you should have a Python.h)
@@ -35,7 +35,8 @@ except:
     sys.exit(1)
 
 ############## Init some vars
-extra_compile_args=["-O3", "-DLinuxBuild"] #optimize but don't alter semantics
+if os.name != 'nt': # *nix
+    extra_compile_args=["-O3", "-DLinuxBuild"] #optimize but don't alter semantics
 library_dirs = []
 include_dirs = []
 libraries = []
@@ -80,8 +81,6 @@ if hasIMagick:
 else:
     print "ImageMagick library and development files not found."
 
-print "Checked."
-
 class fallible_build_ext(build_ext):
     """the purpose of this class is to know when a compile error ocurred """
     def run(self):
@@ -90,21 +89,18 @@ class fallible_build_ext(build_ext):
         except CCompilerError:
             traceback.print_exc()
 
-
 # force C++ linking
 from distutils import sysconfig
 config_vars = sysconfig.get_config_vars()
 for k, v in config_vars.items():
     if k.count('LD') and str(v).startswith('gcc'):
-        print "+++++++++++++++++++++++++++++++++++++++++++++"
         config_vars[k] = v.replace('gcc', 'g++')
-
             
 print "#################################### Installing"
 setup(name="isk-daemon",
       version='0.8',
       description="Server and library for adding content-based (visual) image searching to any image related website or software.",
-      long_description ="This technology allows users of any image-related website or software to sketch on a widget which image they want to find and have the website reply to them the most similar images or simply request for more similar photos at each image detail page.",
+      long_description=long_description,
       keywords = "imgseek iskdaemon image cbir imagedatabase isk-daemon database searchengine",
       author="Ricardo Niederberger Cabral",
       author_email="ricardo.cabral at imgseek.net",
