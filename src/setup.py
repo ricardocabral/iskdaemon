@@ -9,6 +9,7 @@ import os
 # unfortunatelly this is not working
 if os.name == 'nt': # fix windows stuff
     imgSeekLib_package_data = ['*.dll']
+    imgSeekLib_package_data = ['*.pyd']
 else: # linux
     imgSeekLib_package_data = ['*.so']
 
@@ -17,7 +18,7 @@ with open('README.txt') as file:
 
 #############################[ Parameters you should change if install failed ]#########################################
 # python_dir should point to the directory where Python header files may be found.. (Inside this dir you should have a Python.h)
-python_dir="/usr/include/python"
+# python_dir="/usr/include/python"
 #############################[ End of parameters that can be changed ]##################################################
 
 try:
@@ -35,51 +36,64 @@ except:
     sys.exit(1)
 
 ############## Init some vars
-if os.name != 'nt': # *nix
-    extra_compile_args=["-O3", "-DLinuxBuild"] #optimize but don't alter semantics
+
 library_dirs = []
 include_dirs = []
 libraries = []
 extra_link_args = []
+IMagCFlag = []
+IMagCLib = []
+extra_compile_args = ["-DImMagick"]
 
-hasIMagick=0
-print "#################################### Check ImageMagick"
-try:
-    fnd=0
-    pathvar=os.environ["PATH"]
-    for pv in split(pathvar,':'):
-        if os.path.exists(pv+'/Magick++-config') or os.path.exists(pv+'Magick++-config'):
-            fnd=1
-    if fnd:
-        IMagCFlag=os.popen("Magick++-config --cxxflags --cppflags").read()
-        if find(IMagCFlag,"-I") != -1:
-            IMagCFlag=replace(IMagCFlag,"\n"," ")
-            IMagCFlag=split(IMagCFlag,' ')
-            IMagCLib=os.popen("Magick++-config --ldflags --libs").read()
-            IMagCLib=replace(IMagCLib,"\n"," ")
-            IMagCLib=split(IMagCLib,' ')
-            hasIMagick=1
-    else:
-        print "--- WARNING ---\nUnable to find Magick++-config. Are you sure you have ImageMagick and it's development files installed correctly?"
-except:
-    traceback.print_exc()
+if os.name == 'nt': # windows
+    library_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\lib"]
+    include_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\include"]
+    libraries = ["CORE_RL_Magick++_","CORE_RL_magick_"]
+#    extra_compile_args += ["-DNDEBUG"]
+    extra_compile_args += ["-DWIN32"]
+    extra_compile_args += ["-D__WIN32__"]
+#    extra_compile_args += ["-D_CONSOLE"]
+#    extra_compile_args += ["-D_VISUALC_"]
+#    extra_compile_args += ["-DNeedFunctionPrototypes"]
+#    extra_compile_args += ["-D_DLL"]
+#    extra_compile_args += ["-D__MINGW32__"]
+    extra_compile_args += ["-D_MAGICKMOD_"]
+#    extra_link_args += ["/MANIFEST"] 
+else: # *nix
+    hasIMagick=0
+    extra_compile_args += ["-O3", "-DLinuxBuild"] #optimize but don't alter semantics
+    print "#################################### Check ImageMagick"
+    try:
+        fnd=0
+        pathvar=os.environ["PATH"]
+        for pv in split(pathvar,':'):
+            if os.path.exists(pv+'/Magick++-config') or os.path.exists(pv+'Magick++-config'):
+                fnd=1
+        if fnd:
+            IMagCFlag=os.popen("Magick++-config --cxxflags --cppflags").read()
+            if find(IMagCFlag,"-I") != -1:
+                IMagCFlag=replace(IMagCFlag,"\n"," ")
+                IMagCFlag=split(IMagCFlag,' ')
+                IMagCLib=os.popen("Magick++-config --ldflags --libs").read()
+                IMagCLib=replace(IMagCLib,"\n"," ")
+                IMagCLib=split(IMagCLib,' ')
+                hasIMagick=1
+        else:
+            print "--- WARNING ---\nUnable to find Magick++-config. Are you sure you have ImageMagick and it's development files installed correctly?"
+    except:
+        traceback.print_exc()
 
-if hasIMagick:
-    extra_compile_args=extra_compile_args+["-DImMagick"]
-    libraries=[]                        # remove all other libraries and only use ImageMAgick
-    for cf in IMagCFlag:
-        cf=strip(cf)
-        if not cf: continue
-        extra_compile_args.append(cf)
-    for cf in IMagCLib:
-        cf=strip(cf)
-        if not cf: continue
-        extra_link_args.append(cf)
-    print "Found the following arguments:"
-    print "extra_compile_args",extra_compile_args
-    print "extra_link_args",extra_link_args
-else:
-    print "ImageMagick library and development files not found."
+for cf in IMagCFlag:
+    cf=strip(cf)
+    if not cf: continue
+    extra_compile_args.append(cf)
+for cf in IMagCLib:
+    cf=strip(cf)
+    if not cf: continue
+    extra_link_args.append(cf)
+print "Found the following arguments:"
+print "extra_compile_args",extra_compile_args
+print "extra_link_args",extra_link_args
 
 class fallible_build_ext(build_ext):
     """the purpose of this class is to know when a compile error ocurred """
@@ -111,6 +125,7 @@ setup(name="isk-daemon",
       ext_modules = [
         Extension("imgdb",["imgSeekLib/imgdb.cpp",
                            "imgSeekLib/haar.cpp",
+                           "imgSeekLib/imgdb_wrap.cxx",
                            "imgSeekLib/bloom_filter.cpp"
                                       ],
                   include_dirs = include_dirs,
@@ -122,12 +137,12 @@ setup(name="isk-daemon",
                  )],
       license = 'GPLv2',
       packages=['imgSeekLib'],
-      #package_data={'imgSeekLib': imgSeekLib_package_data},
+      package_data={'imgSeekLib': imgSeekLib_package_data},
       scripts= ['isk-daemon.py','default_settings.py','settings.py'],
       install_requires = ['Twisted >= 8',
                           'simplejson',
                           'fpconst',
-                          'SOAPpy == 0.11',
+                          'SOAPpy',
                           ],
       dependency_links = ["http://sourceforge.net/project/showfiles.php?group_id=26590&package_id=18246",
                          ],

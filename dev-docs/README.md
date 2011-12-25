@@ -20,7 +20,15 @@ Ubuntu Dev environment
     cd ~/prj
     git clone git@github.com:ricardocabral/iskdaemon.git
     git config --global user.name "Ricardo Niederberger Cabral"
-    git config --global user.email ricardo@isnotworking.com
+    git config --global user.email "ricardo@isnotworking.com"
+
+Windows
+-------
+
+Install Visual Studio express
+install imagemagick windows, option to include dev headers
+
+msvc9compiler.py from python27\distutils had to remove linker switch "/EXPORT:" (was getting "unresolved external initimgdb")
 
 ubuntu packaging
 ----------------

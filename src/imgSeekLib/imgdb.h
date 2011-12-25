@@ -216,7 +216,7 @@ typedef struct srzMetaDataStruct_{
 } srzMetaDataStruct;
 
 /* Bloom filter globals */
-unsigned int random_bloom_seed = 0; //TODO do I need to set this to curr time ?
+#define random_bloom_seed  0
 
 /* signature structure */
 #define AVG_IMGS_PER_DBSPACE 20000 // just a guess

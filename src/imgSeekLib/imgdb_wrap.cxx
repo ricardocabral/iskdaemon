@@ -3422,6 +3422,11 @@ SWIG_AsVal_ptrdiff_t (PyObject * obj, ptrdiff_t *val)
 #include <vector>
 
 
+#define SWIG_FILE_WITH_INIT
+#include "bloom_filter.h"
+#include "imgdb.h"
+
+
 namespace swig {  
   template <class Type>
   struct noconst_traits {

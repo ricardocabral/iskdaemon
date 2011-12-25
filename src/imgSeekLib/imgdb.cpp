@@ -51,14 +51,6 @@ using namespace std;
 #include "bloom_filter.h"
 #include "imgdb.h"
 
-#ifdef ISK_SWIG_JAVA
-/* Java interface */
-    #include "imgdb_wrap.h"
-#else
-    /* Python interface */
-    #include "imgdb_wrap.cxx"
-#endif
-
 //TODO reactivate fast jpeg loader: http://trac.xapian.org/browser/branches/imgseek/xapian-extras/imgseek
 
 // Globals

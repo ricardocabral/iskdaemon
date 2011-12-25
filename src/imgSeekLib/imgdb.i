@@ -1,6 +1,11 @@
 %module imgdb
 
 %include "std_vector.i"
+%{
+#define SWIG_FILE_WITH_INIT
+#include "bloom_filter.h"
+#include "imgdb.h"
+%}
 
 namespace std {
    %template(IntVector) vector<int>;
