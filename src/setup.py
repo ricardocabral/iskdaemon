@@ -16,11 +16,6 @@ else: # linux
 with open('README.txt') as file:
     long_description = file.read()
 
-#############################[ Parameters you should change if install failed ]#########################################
-# python_dir should point to the directory where Python header files may be found.. (Inside this dir you should have a Python.h)
-# python_dir="/usr/include/python"
-#############################[ End of parameters that can be changed ]##################################################
-
 try:
     import sys,commands,traceback,os
     from distutils import sysconfig
@@ -52,16 +47,14 @@ if os.name == 'nt': # windows
 #    extra_compile_args += ["-DNDEBUG"]
     extra_compile_args += ["-DWIN32"]
     extra_compile_args += ["-D__WIN32__"]
-#    extra_compile_args += ["-D_CONSOLE"]
-#    extra_compile_args += ["-D_VISUALC_"]
+    extra_compile_args += ["-D_CONSOLE"]
+    extra_compile_args += ["-D_VISUALC_"]
 #    extra_compile_args += ["-DNeedFunctionPrototypes"]
 #    extra_compile_args += ["-D_DLL"]
-#    extra_compile_args += ["-D__MINGW32__"]
     extra_compile_args += ["-D_MAGICKMOD_"]
-#    extra_link_args += ["/MANIFEST"] 
 else: # *nix
     hasIMagick=0
-    extra_compile_args += ["-O3", "-DLinuxBuild"] #optimize but don't alter semantics
+    extra_compile_args += ["-O3", "-DLinuxBuild"] 
     print "#################################### Check ImageMagick"
     try:
         fnd=0
@@ -138,7 +131,7 @@ setup(name="isk-daemon",
       license = 'GPLv2',
       packages=['imgSeekLib'],
       package_data={'imgSeekLib': imgSeekLib_package_data},
-      scripts= ['isk-daemon.py','default_settings.py','settings.py'],
+      scripts= ['isk-daemon.py','settings.py'],
       install_requires = ['Twisted >= 8',
                           'simplejson',
                           'fpconst',
