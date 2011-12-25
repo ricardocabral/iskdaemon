@@ -16,10 +16,6 @@ databasePath = "~/isk-db"                 # file where to store database files
 saveInterval = 120                        # seconds between each automatic database save
 automaticSave = False                     # whether the database should be saved automatically
 
-###### API settings
-useKey = False                            # whether it should validate key on XML requests
-apiKey = "08a4415e9d594ff960030b921d42b91e"  # key generated with isk-keygen.py
-
 ###### cluster settings
 isClustered = False                        # run in cluster mode ? If True, make sure subsequent settings are ok
 # initial list of server instances on this cluster. List of strings with the format "hostname:service_port" (internal service endpoint)

@@ -49,6 +49,7 @@ if os.name == 'nt': # windows
     extra_compile_args += ["-D__WIN32__"]
     extra_compile_args += ["-D_CONSOLE"]
     extra_compile_args += ["-D_VISUALC_"]
+#TODO-2 make sure any other performance/size related switch needs to be toggled
 #    extra_compile_args += ["-DNeedFunctionPrototypes"]
 #    extra_compile_args += ["-D_DLL"]
     extra_compile_args += ["-D_MAGICKMOD_"]
