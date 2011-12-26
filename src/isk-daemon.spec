@@ -36,7 +36,7 @@ exe = EXE(pyz,
           upx=True,
           icon='www\\favicon.ico',
           console=False)
-docfiles = Datafiles(['settings.py','AUTHORS.txt','COPYING.txt','README.txt'] + AllFilesIn('www'))
+docfiles = Datafiles(['settings.py','AUTHORS.txt','COPYING.txt','README.txt','instsrv.exe','srvany.exe'] + AllFilesIn('www'))
 coll = COLLECT( exe,
                a.binaries,
                a.zipfiles,

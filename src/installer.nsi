@@ -12,7 +12,7 @@
 
 SetCompressor bzip2
 
-; MUI 1.67 compatible ------
+; MUI 1.67 compatible 
 !include "MUI.nsh"
 
 ; MUI Settings
@@ -61,17 +61,29 @@ Section "MainSection" SEC01
   File /r "dist\isk-daemon\*"
 
   MessageBox MB_YESNO "Install and run as a Windows service?" /SD IDYES IDNO false2
-  DetailPrint "Installing service..."
-; Install a service - ServiceType own process - StartType automatic - NoDependencies - Logon as System Account
-  SimpleSC::InstallService "iskdaemon" "isk-daemon" "16" "2" "$INSTDIR\isk-daemon.exe" "" "" ""
+
+  ; Stop a service and waits for file release
+  SimpleSC::StopService "iskdaemon" 1 60
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
 
-; Set the description of a service
+  ; Remove a service
+  SimpleSC::RemoveService "iskdaemon"
+  Pop $0 ; returns an errorcode (<>0) otherwise success (0)
+
+  ; Install service
+  ExecWait '$INSTDIR\instsrv "iskdaemon" "$INSTDIR\srvany.exe"'
+
+  DetailPrint "Installing service..."
+  ; Write registry settings for service
+  WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\iskdaemon\Parameters" Application "$INSTDIR\isk-daemon.exe"
+  WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\iskdaemon\Parameters" AppDirectory "$INSTDIR"
+
+  ; Set the description of a service
   SimpleSC::SetServiceDescription "iskdaemon" "Image similarity search server."
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
   DetailPrint "... service installed."
   DetailPrint "Starting service..."
-; Start a service
+  ; Start a service
   SimpleSC::StartService "iskdaemon" "" 60
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
   DetailPrint "Started successfuly."
@@ -83,7 +95,7 @@ next2:
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\isk-daemon.lnk" "$INSTDIR\isk-daemon.exe"
-  CreateShortCut "$DESKTOP\isk-daemon.lnk" "$INSTDIR\isk-daemon.exe"
+  ;CreateShortCut "$DESKTOP\isk-daemon.lnk" "$INSTDIR\isk-daemon.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 

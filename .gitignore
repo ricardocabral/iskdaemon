@@ -29,5 +29,4 @@ ake-eggs
 *.pyc
 *.pyo
 *.tmp*
-*.exe
 3rd
