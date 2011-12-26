@@ -29,4 +29,5 @@ ake-eggs
 *.pyc
 *.pyo
 *.tmp*
+Setup.exe
 3rd
