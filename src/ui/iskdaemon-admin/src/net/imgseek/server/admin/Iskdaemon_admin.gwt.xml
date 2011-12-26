@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='iskdaemon_admin'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+
+  <!-- Inherit the default GWT style sheet.  You can change       -->
+  <!-- the theme of your GWT application by uncommenting          -->
+  <!-- any one of the following lines.                            -->
+  <inherits name='com.google.gwt.user.theme.clean.Clean'/>
+  <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> -->
+  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+  <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+  <!-- Other module inherits                                      -->
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='net.imgseek.server.admin.client.Iskdaemon_admin'/>
+
+  <!-- Other module inherits -->                                       
+  <inherits name='com.fredhat.gwt.xmlrpc.XMLRPC'/>
+    
+  <!-- Specify the application specific style sheet.              -->
+  <stylesheet src='iskdaemon.css' />
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+
+</module>
