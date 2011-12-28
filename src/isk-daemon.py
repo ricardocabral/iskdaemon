@@ -57,7 +57,7 @@ daemonStartTime = time.time()
 hasShutdown = False
 
 # Constants
-iskVersion = "0.8"
+iskVersion = "0.9"
 
 ############ Common functions for all comm backends
 #@memoize.simple_memoized

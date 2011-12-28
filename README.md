@@ -27,7 +27,7 @@ See https://sites.google.com/a/imgseek.net/imgseek/isk-daemon/documents-1/compil
 
 Installation, usage instructions and more details are available online at http://server.imgseek.net/.
 
-Client libraries and other notes are available at the directory "docs/" in the source download.
+Client libraries and other notes are available at the directory "api-docs/" in the source download.
 
 # Credits
 
