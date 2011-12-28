@@ -19,20 +19,11 @@ Key features:
 
 # Install instructions
 
-If a binary package is not available for your platform or you're getting dependency/binary errors you may need to compile the C++ module from source.
-
-See https://sites.google.com/a/imgseek.net/imgseek/isk-daemon/documents-1/compiling for instructions.
-
-# More details
-
-Installation, usage instructions and more details are available online at http://server.imgseek.net/.
-
-Client libraries and other notes are available at the directory "api-docs/" in the source download.
+Installation, usage instructions and more details are available online at http://www.imgseek.net/isk-daemon/documents-1/install-and-usage
 
 # Credits
 
-imgSeek and isk-daemon portions copyright Ricardo Niederberger Cabral.
-(ricardo at isnotworking.com)
+imgSeek and isk-daemon portions copyright Ricardo Niederberger Cabral (ricardo.cabral at imgseek.net).
 
 Image loading code is credited to "ImageMagick Studio LLC" and library linkage adheres to statements on ImageMagick-License.txt
 
