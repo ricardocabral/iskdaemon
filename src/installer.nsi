@@ -153,5 +153,5 @@ Section Uninstall
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   SetAutoClose true
-  ExecShell open "http://server.imgseek.net/?op=uninstall"
+  ExecShell open "https://docs.google.com/a/imgseek.net/spreadsheet/viewform?formkey=dE4wWUgtd1ZYNk0teWVVS0NMenVadGc6MQ"
 SectionEnd

@@ -8,6 +8,7 @@ downloads
 eggs
 parts
 lib64
+.settings
 *~
 *.log
 build
@@ -30,3 +31,7 @@ ake-eggs
 *.tmp*
 Setup.exe
 3rd
+classes
+deploy
+iskdaemon_admin
+gwt-unitCache
