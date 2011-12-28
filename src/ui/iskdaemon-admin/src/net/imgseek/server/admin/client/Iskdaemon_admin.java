@@ -31,8 +31,8 @@ public class Iskdaemon_admin implements EntryPoint, HistoryListener {
 	private static final String SERVER_ERROR = "An error occurred while "
 			+ "attempting to contact the server. Please check your network "
 			+ "connection and try again.";
-	public static final String VERSION = "0.8";
-	public static final String RELEASEDATE = "December 2011";
+	public static final String VERSION = "0.9";
+	public static final String RELEASEDATE = "Jan 2012";
 	protected static String WEB_ENDPOINT = "/";
 	public static final String XMLRPC_BACKEND = WEB_ENDPOINT + "RPC";
 	protected static SinkList list = new SinkList();
@@ -49,7 +49,7 @@ public class Iskdaemon_admin implements EntryPoint, HistoryListener {
 	  }-*/;
 
 	public static void error(final Throwable caught) {
-		if (caught.getMessage().equals("Size: 1 Index: 1")) {
+		if (caught.getMessage().equals("Size: 1 Index: 1")) { //TODO what does it mean?
 			return;
 		}
 
