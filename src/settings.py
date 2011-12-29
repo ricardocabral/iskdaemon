@@ -1,5 +1,3 @@
-from default_settings import *
-
 ################################################################################
 # isk-daemon settings
 # change the variables below to customize isk-daemon behavior
