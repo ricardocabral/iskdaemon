@@ -3,6 +3,9 @@
 .installed.cfg
 bin
 develop-eggs
+isk-db
+imgdb.data
+\\Users\\rnc\\isk-db
 dist
 downloads
 eggs
