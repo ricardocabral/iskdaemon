@@ -1067,17 +1067,6 @@ int destroydb(const int dbId) {
 int resetdb(const int dbId) {
 
 	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return 0;}
-	//TODO delete kwdstructs from globalKwdsMap
-	//TODO there is a memleak here:
-    // ==19336==    at 0x4C25F6C: operator new(unsigned long) (vg_replace_malloc.c:230)
-    // ==19336==    by 0x878CFE0: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/libstdc++.so.6.0.10)
-    // ==19336==    by 0x878D88A: std::string::_Rep::_M_clone(std::allocator<char> const&, unsigned long) (in /usr/lib/libstdc++.so.6.0.10)
-    // ==19336==    by 0x878E2AB: std::string::string(std::string const&) (in /usr/lib/libstdc++.so.6.0.10)
-    // ==19336==    by 0x78B046F: std::vector<std::string, std::allocator<std::string> >::_M_insert_aux(__gnu_cxx::__normal_iterator<std::string*, std::vector<std::string, std::allocator<std::string> > >, std::string const&) (new_allocator.h:108)
-    // ==19336==    by 0x78B4F40: bloom_filter::generate_unique_salt() (stl_vector.h:694)
-    // ==19336==    by 0x78968D8: resetdb(int) (bloom_filter.h:58)
-    // ==19336==    by 0x78982FC: _wrap_resetdb (imgdb_python_linux_wrap.h:11785)
-
     // first deallocate db memory
 
 	// deallocate all buckets
@@ -1088,7 +1077,6 @@ int resetdb(const int dbId) {
                 dbSpace[dbId]->imgbuckets[c][pn][i].clear();
 
     //delete sigs
-
     for (sigIterator it = dbSpace[dbId]->sigs.begin(); it != dbSpace[dbId]->sigs.end(); it++) {
         delete (*it).second;
     }
@@ -1098,8 +1086,8 @@ int resetdb(const int dbId) {
     dbSpace[dbId]->sigs.clear(); // this is making windows choke
     // dbSpace[dbId]->sigs = sigMap();
 
-	delete dbSpace[dbId];
- 	dbSpace.erase(dbId);
+	//delete dbSpace[dbId];
+ 	//dbSpace.erase(dbId);
 
  	// finally the reset itself
 	dbSpace[dbId] = new dbSpaceStruct();
