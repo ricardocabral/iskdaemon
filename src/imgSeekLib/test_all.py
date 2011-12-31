@@ -35,7 +35,7 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(1,self.imgdb.resetdb(1))
 
     def tearDown(self):
-        self.assertEqual(1,self.imgdb.resetdb(1));
+        #self.assertEqual(1,self.imgdb.resetdb(1));
         self.imgdb.closedb();        
 
     def testAddImage(self):
@@ -93,7 +93,7 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(1,self.imgdb.addImage(3, test_images_dir+"DSC00021.JPG",21))
         self.assertEqual(1,self.imgdb.addImage(3, test_images_dir+"DSC00021b.JPG",22))
         
-        self.assertEqual(1,self.imgdb.savealldbs(dataFile))
+        self.assertEqual(3,self.imgdb.savealldbs(dataFile))
 
         # reset
         self.assertEqual(1,self.imgdb.resetdb(1))
@@ -104,7 +104,7 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(0, self.imgdb.getImgCount(2))
         self.assertEqual(0, self.imgdb.getImgCount(3))
 
-        self.assertEqual(1,self.imgdb.loadalldbs(dataFile))
+        self.assertEqual(3,self.imgdb.loadalldbs(dataFile))
         
         self.assertEqual(6, self.imgdb.getImgCount(1))
         self.assertEqual(3, self.imgdb.getImgCount(2))
@@ -188,25 +188,23 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"Copy of DSC00006.JPG",8))
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00019.JPG",19))
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021.JPG",21))
-        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021b.JPG",22))
         
         dv = self.imgdb.queryImgID(1,6, 4)
-        self.assertEqual(4, len(dv))
-
         dv = self.imgdb.queryImgID(1,7, 4)
-        self.assertEqual(4, len(dv))
-
         dv = self.imgdb.queryImgID(1,8, 4)
-        self.assertEqual(4, len(dv))
-
         dv = self.imgdb.queryImgID(1,21, 4)
-        self.assertEqual(4, len(dv))
         
         self.assertEqual(4, self.imgdb.getQueryCount(1))
         
     def testgetAddCount(self):
-        #TODO
-        pass        
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00006.JPG",6))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00007.JPG",7))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"Copy of DSC00006.JPG",8))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00019.JPG",19))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021.JPG",21))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021b.JPG",22))
+
+        self.assertEqual(6, self.imgdb.getAddCount(1))
         
     def testqueryImage(self):
         self.assertEqual(2,self.imgdb.createdb(2))
@@ -234,28 +232,28 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(1,self.imgdb.addImage(3, test_images_dir+"DSC00021b.JPG",22))
         
         dv = self.imgdb.queryImgID(1,6, 4)
-        self.assertEqual(4, len(dv))
+        self.assertEqual(5, len(dv))
         
         dv = self.imgdb.queryImgID(1,6, 3)
-        self.assertEqual(3, len(dv))
-        self.assertEqual(6, dv[0][0]) 
-        self.assertEqual(19, dv[1][0])
-        self.assertEqual(7, dv[2][0]) 
+        self.assertEqual(4, len(dv))
+        self.assertEqual(8, dv[0][0]) 
+        self.assertEqual(6, dv[1][0])
+        self.assertEqual(19, dv[2][0]) 
                 
         dv = self.imgdb.queryImgID(2,19, 4)
         self.assertEqual(0, len(dv))
         
         dv = self.imgdb.queryImgID(3,21, 4)
-        self.assertEqual(4, len(dv))
-        self.assertEqual(22, dv[0][0]) 
-        self.assertEqual(19, dv[1][0])
-        self.assertEqual(7, dv[2][0])
-        self.assertEqual(8, dv[3][0]) 
+        self.assertEqual(5, len(dv))
+        self.assertEqual(21, dv[0][0]) 
+        self.assertEqual(22, dv[1][0])
+        self.assertEqual(19, dv[2][0])
+        self.assertEqual(7, dv[3][0]) 
         
         dv = self.imgdb.queryImgID(3,6, 2)
-        self.assertEqual(2, len(dv))
-        self.assertEqual(8, dv[0][0]) 
-        self.assertEqual(19, dv[1][0])         
+        self.assertEqual(3, len(dv))
+        self.assertEqual(6, dv[0][0]) 
+        self.assertEqual(8, dv[1][0])         
     
     def testqueryImgIDFast(self):
         pass
@@ -281,23 +279,31 @@ class ImageDBTest(unittest.TestCase):
         #bool removedb(const int dbId);
 
 #// keywords in images
-    def testaddKeywordImg(self):
-        pass
-        #bool addKeywordImg(const int dbId, const int id, const int hash);
     def testremoveKeywordImg(self):
-        pass
-        #bool removeKeywordImg(const int dbId, const int id, const int hash);
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021b.JPG",1))
+        self.imgdb.addKeywordImg(1,1,2)
+        kwds = self.imgdb.getKeywordsImg(1,1)
+        self.assert_(2 in kwds)
+        self.imgdb.removeKeywordImg(1,1,2)
+        kwds = self.imgdb.getKeywordsImg(1,1)
+        self.assertEqual(0, len(kwds))
+
     def testremoveAllKeywordImg(self):
-        pass
-        #bool removeAllKeywordImg(const int dbId, const int id);
-    def testgetKeywordsImg(self):
-        pass
-        #std::vector<int> getKeywordsImg(const int dbId, const int id);
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021b.JPG",1))
+        self.imgdb.addKeywordImg(1,1,2)
+        self.imgdb.removeAllKeywordImg(1, 1);
+        kwds = self.imgdb.getKeywordsImg(1,1)
+        self.assertEqual(0, len(kwds))
 
 #// query by keywords
     def testqueryImgIDKeywords(self):
         pass
         #std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021b.JPG",22))
+        
+        dv = self.imgdb.queryImgID(1,6, 4)
+
+
     def testqueryImgIDFastKeywords(self):
         pass
         #std::vector<double> queryImgIDFastKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
