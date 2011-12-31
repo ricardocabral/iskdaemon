@@ -242,8 +242,9 @@ class ImageDBTest(unittest.TestCase):
                 
         dv = self.imgdb.queryImgID(2,19, 4)
         self.assertEqual(0, len(dv))
-        
-        dv = self.imgdb.queryImgID(3,21, 4)
+       
+        # test Fast search
+        dv = self.imgdb.queryImgID(3,21, 4, True)
         self.assertEqual(5, len(dv))
         self.assertEqual(21, dv[0][0]) 
         self.assertEqual(22, dv[1][0])
@@ -254,11 +255,7 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(3, len(dv))
         self.assertEqual(6, dv[0][0]) 
         self.assertEqual(8, dv[1][0])         
-    
-    def testqueryImgIDFast(self):
-        pass
-        #std::vector<double> queryImgIDFast(const int dbId, long int id, int numres);
-
+ 
     def testgetImageHeight(self):
         pass
 
