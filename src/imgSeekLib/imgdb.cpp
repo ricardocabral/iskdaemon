@@ -707,7 +707,6 @@ std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2,
 			}
 #endif
 
-
 			// update the score of every image which has this coef
 			long_listIterator end = dbSpace[dbId]->imgbuckets[c][pn][idx].end();
 			for (long_listIterator uit = dbSpace[dbId]->imgbuckets[c][pn][idx].begin();

@@ -394,7 +394,7 @@ class ImgDB:
         for i in range(len(results) / 2):
             rid = long(results[i*2])
             rsc = results[i*2+1]
-            rsc = -100.0*rsc/38.70  # normalize
+            rsc = -100.0*rsc/38.70  # normalize #TODO is this normalization factor still valid?
             #sanity checks
             if rsc<0:rsc = 0
             if rsc>100:rsc = 100
@@ -403,7 +403,6 @@ class ImgDB:
         res.reverse()
         log.debug("queryImgIDKeywords() ret="+str(res))
         return res
-
 
     @utils.requireKnownDbId
     def mostPopularKeywords(self,dbId, imgs, excludedKwds, count, mode):

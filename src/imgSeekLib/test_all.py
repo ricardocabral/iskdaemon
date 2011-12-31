@@ -266,8 +266,9 @@ class ImageDBTest(unittest.TestCase):
 
         #int addImageBlob(const int dbId, const long int id, const void *blob, const long length);
     def testisValidDB(self):
-        pass
-        #bool isValidDB(const int dbId);
+        self.assertEqual(True, self.imgdb.isValidDB(1))
+        self.assertEqual(False, self.imgdb.isValidDB(1311))
+
     def testdestroydb(self):
         pass
         #int destroydb(const int dbId);
@@ -294,11 +295,25 @@ class ImageDBTest(unittest.TestCase):
 
 #// query by keywords
     def testqueryImgIDKeywords(self):
-        pass
-        #std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00006.JPG",6))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00007.JPG",7))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"Copy of DSC00006.JPG",8))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00019.JPG",19))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021.JPG",21))
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00021b.JPG",22))
         
-        dv = self.imgdb.queryImgID(1,6, 4)
+        self.imgdb.addKeywordImg(1,6,2)
+        self.imgdb.addKeywordImg(1,7,3)
+        self.imgdb.addKeywordImg(1,7,2)
+
+        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 0, [2,3]) # AND
+        ids = [r[0] for r in dv]
+        self.assert_(7 in ids)
+        #dv [[8L, 100], [6L, 100], [19L, 15.272009339950403], [22L, 14.274818233138154], [7L, 14.086848507770208]]
+        self.assertEqual(2,len(dv))
+
+        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 0, [2,3]) # OR
+        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [3])
 
 
     def testqueryImgIDFastKeywords(self):
