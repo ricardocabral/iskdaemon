@@ -35,7 +35,7 @@ except:
 library_dirs = []
 include_dirs = []
 libraries = []
-extra_link_args = []
+extra_link_args = ["-g"] #TODO remove debug
 IMagCFlag = []
 IMagCLib = []
 extra_compile_args = ["-DImMagick"]
@@ -55,7 +55,7 @@ if os.name == 'nt': # windows
     extra_compile_args += ["-D_MAGICKMOD_"]
 else: # *nix
     hasIMagick=0
-    extra_compile_args += ["-O3", "-DLinuxBuild"] 
+    extra_compile_args += [ "-D_GLIBCXX_DEBUG=0","-D_GLIBCXX_DEBUG_PEDANTIC=0", "-DLinuxBuild","-g"] #TODO "-O3"
     print "#################################### Check ImageMagick"
     try:
         fnd=0
