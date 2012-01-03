@@ -58,6 +58,7 @@ class ImageDBTest(unittest.TestCase):
     def testsaveloaddb(self):
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00006.JPG",6))
         self.assertEqual(1,self.imgdb.savedbas(1,test_images_dir+"imgdb.data"))
+        self.assertEqual(1,self.imgdb.savedb(1))
         self.assertEqual(1,self.imgdb.resetdb(1))    
         self.assertEqual(1,self.imgdb.loaddb(1,test_images_dir+"imgdb.data"))
         self.assertEqual(1, self.imgdb.getImgCount(1))
@@ -314,7 +315,6 @@ class ImageDBTest(unittest.TestCase):
 
         dv = self.imgdb.queryImgIDKeywords(1,6, 4, 0, [2,3]) # OR
         dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [3])
-
 
     def testqueryImgIDFastKeywords(self):
         pass
