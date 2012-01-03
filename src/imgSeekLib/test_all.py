@@ -38,6 +38,10 @@ class ImageDBTest(unittest.TestCase):
         #self.assertEqual(1,self.imgdb.resetdb(1));
         self.imgdb.closedb();        
 
+    def testAddImageUTF8(self):
+        # make sure the shuffled sequence does not lose any elements        
+        self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"テスト.JPG",6,))
+
     def testAddImage(self):
         # make sure the shuffled sequence does not lose any elements        
         self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00006.JPG",6,))
