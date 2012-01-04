@@ -1,0 +1,16 @@
+Source: isk-daemon
+Section: python
+Priority: extra
+Maintainer: Ricardo Niederberger Cabral <ricardo.cabral@imgseek.net>
+Build-Depends: debhelper (>= 8.0.0), python (>=2.4), swig,libmagick++-dev,python-dev, python-setuptools 
+Standards-Version: 3.9.2
+Homepage: http://server.imgseek.net/
+#Vcs-Git: git://git.debian.org/collab-maint/isk-daemon.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/isk-daemon.git;a=summary
+
+Package: isk-daemon
+Architecture: any
+Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends},  python-twisted-web, libmagick++3
+Description: isk-daemon is an open source database server capable of adding content-based (visual) image searching to any image related website or software.
+ isk-daemon is an open source database server capable of adding content-based (visual) image searching to any image related website or software.
+ This technology allows users of any image-related website or software to sketch on a widget which image they want to find and have the website reply to them the most similar images or simply request for more similar photos at each image detail page.

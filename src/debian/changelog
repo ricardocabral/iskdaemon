@@ -1,0 +1,5 @@
+isk-daemon (0.9-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Ricardo Niederberger Cabral <ricardo.cabral@imgseek.net>  Wed, 04 Jan 2012 02:38:59 -0200
