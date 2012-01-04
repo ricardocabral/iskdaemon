@@ -246,7 +246,7 @@ class ImgDB:
             dbSpace.addMinCount += 1
 
        # call imgdb
-        res = imgdb.addImage(dbId, newid, fname.encode('utf-8'))
+        res = imgdb.addImage(dbId, newid, fname)
 
         if res != 0: # add successful
             dbSpace.lastId = newid + 1

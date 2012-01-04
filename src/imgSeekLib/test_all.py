@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+﻿#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 ###############################################################################
 # begin                : 2008-12-04
@@ -36,11 +36,15 @@ class ImageDBTest(unittest.TestCase):
 
     def tearDown(self):
         #self.assertEqual(1,self.imgdb.resetdb(1));
-        self.imgdb.closedb();        
+        self.imgdb.closedb()  
 
     def testAddImageUTF8(self):
-        # make sure the shuffled sequence does not lose any elements        
         self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"テスト.JPG",6,))
+        self.assertEqual(1,self.imgdb.getImgCount(1))
+        self.assertEqual(1,self.imgdb.savedbas(1,test_images_dir+"imgdb.data"))
+        self.assertEqual(1,self.imgdb.resetdb(1))    
+        self.assertEqual(1,self.imgdb.loaddb(1,test_images_dir+"imgdb.data"))
+        self.assertEqual(1,self.imgdb.getImgCount(1))
 
     def testAddImage(self):
         # make sure the shuffled sequence does not lose any elements        
@@ -117,8 +121,8 @@ class ImageDBTest(unittest.TestCase):
         
     
     def testaddDir(self):
-        self.assertEqual(15,self.imgdb.addDir(1,test_images_dir+"",True))
-        self.assertEqual(15,self.imgdb.getImgCount(1))        
+        self.assertEqual(16,self.imgdb.addDir(1,test_images_dir+"",True))
+        self.assertEqual(16,self.imgdb.getImgCount(1))        
     
     def testremoveImg(self):
         self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00006.JPG",6))
