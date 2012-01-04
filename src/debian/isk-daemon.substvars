@@ -1,0 +1,4 @@
+python:Versions=2.4
+python:Depends=python (<< 2.8), python (>= 2.4), python-support (>= 0.90.0)
+shlibs:Depends=libc6 (>= 2.3.6-6~), libc6 (>= 2), libgcc1 (>= 1:4.1.1), libmagickcore3 (>= 8:6), libstdc++6 (>= 4)
+misc:Depends=
