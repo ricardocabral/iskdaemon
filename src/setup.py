@@ -6,13 +6,8 @@ from setuptools import setup, find_packages
 
 # win/linux diffs
 import os
-# unfortunatelly this is not working
-if os.name == 'nt': # fix windows stuff
-    imgSeekLib_package_data = ['*.dll']
-    imgSeekLib_package_data = ['*.pyd']
-else: # linux
-    imgSeekLib_package_data = ['*.so']
 
+# reuse README as package long description
 with open('README.txt') as file:
     long_description = file.read()
 
@@ -35,7 +30,7 @@ except:
 library_dirs = []
 include_dirs = []
 libraries = []
-extra_link_args = ["-g"] #TODO remove debug
+extra_link_args = []
 IMagCFlag = []
 IMagCLib = []
 extra_compile_args = ["-DImMagick"]
@@ -44,7 +39,6 @@ if os.name == 'nt': # windows
     library_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\lib"]
     include_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\include"]
     libraries = ["CORE_RL_Magick++_","CORE_RL_magick_"]
-#    extra_compile_args += ["-DNDEBUG"]
     extra_compile_args += ["-DWIN32"]
     extra_compile_args += ["-D__WIN32__"]
     extra_compile_args += ["-D_CONSOLE"]
@@ -55,7 +49,8 @@ if os.name == 'nt': # windows
     extra_compile_args += ["-D_MAGICKMOD_"]
 else: # *nix
     hasIMagick=0
-    extra_compile_args += [ "-D_GLIBCXX_DEBUG=0","-D_GLIBCXX_DEBUG_PEDANTIC=0", "-DLinuxBuild","-g"] #TODO "-O3"
+    extra_compile_args += [ "-DLinuxBuild","-g"] 
+    extra_link_args += ["-g"] #TODO-0 remove debug
     print "#################################### Check ImageMagick"
     try:
         fnd=0
@@ -99,14 +94,21 @@ class fallible_build_ext(build_ext):
 
 # force C++ linking
 from distutils import sysconfig
-config_vars = sysconfig.get_config_vars()
+config_vars = sysconfig.get_config_vars() #TODO-2 is this really still necessary?
 for k, v in config_vars.items():
     if k.count('LD') and str(v).startswith('gcc'):
         config_vars[k] = v.replace('gcc', 'g++')
             
+def find_data_files(d):
+    matches = []
+    for root, dirnames, filenames in os.walk(d):
+      for filename in filenames:
+          matches.append(os.path.join(root[3:], filename))
+    return matches
+
 print "#################################### Installing"
 setup(name="isk-daemon",
-      version='0.8',
+      version='0.9',
       description="Server and library for adding content-based (visual) image searching to any image related website or software.",
       long_description=long_description,
       keywords = "imgseek iskdaemon image cbir imagedatabase isk-daemon database searchengine",
@@ -117,22 +119,25 @@ setup(name="isk-daemon",
       platforms = ['Linux','Windows','Mac OSX'],
       cmdclass = { 'build_ext': fallible_build_ext},
       ext_modules = [
-        Extension("imgdb",["imgSeekLib/imgdb.cpp",
+        Extension("_imgdb",["imgSeekLib/imgdb.cpp",
                            "imgSeekLib/haar.cpp",
-                           "imgSeekLib/imgdb_wrap.cxx",
+                           "imgSeekLib/imgdb.i",
                            "imgSeekLib/bloom_filter.cpp"
                                       ],
                   include_dirs = include_dirs,
                   library_dirs = library_dirs,
-                  extra_compile_args=extra_compile_args,
-                  extra_link_args=extra_link_args,
+                  extra_compile_args = extra_compile_args,
+                  extra_link_args = extra_link_args,
                   libraries = libraries,
                   swig_opts = ['-c++']
                  )],
+      py_modules = ['imgdb'],
       license = 'GPLv2',
-      packages=['imgSeekLib'],
-      package_data={'imgSeekLib': imgSeekLib_package_data},
-      scripts= ['isk-daemon.py','settings.py'],
+      packages=['imgSeekLib', 'ui','plugins','core'],
+      package_data={'imgSeekLib': ['*.so','*.pyd','*.dll'],
+                    'ui': find_data_files('ui/admin-www'), 
+                    },
+      scripts= ['isk-daemon.py'],
       install_requires = ['Twisted >= 8',
                           'simplejson',
                           'fpconst',

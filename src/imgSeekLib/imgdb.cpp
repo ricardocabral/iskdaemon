@@ -1073,8 +1073,8 @@ int resetdb(const int dbId) {
     for (int c = 0; c < 3; c++)
         for (int pn = 0; pn < 2; pn++)
             for (int i = 0; i < 16384; i++) {
-                
-                dbSpace[dbId]->imgbuckets[c][pn][i].clear();
+                if (dbSpace[dbId])
+                    dbSpace[dbId]->imgbuckets[c][pn][i].clear();
             }
 
     //delete sigs
@@ -1094,7 +1094,6 @@ int resetdb(const int dbId) {
 	dbSpace[dbId] = new dbSpaceStruct();
 
 	return 1;
-
 }
 
 long int getImgCount(const int dbId) {
