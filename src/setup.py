@@ -35,7 +35,7 @@ except:
 library_dirs = []
 include_dirs = []
 libraries = []
-extra_link_args = ["-g"] #TODO remove debug
+extra_link_args = []
 IMagCFlag = []
 IMagCLib = []
 extra_compile_args = ["-DImMagick"]
@@ -44,7 +44,6 @@ if os.name == 'nt': # windows
     library_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\lib"]
     include_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\include"]
     libraries = ["CORE_RL_Magick++_","CORE_RL_magick_"]
-#    extra_compile_args += ["-DNDEBUG"]
     extra_compile_args += ["-DWIN32"]
     extra_compile_args += ["-D__WIN32__"]
     extra_compile_args += ["-D_CONSOLE"]
@@ -55,7 +54,8 @@ if os.name == 'nt': # windows
     extra_compile_args += ["-D_MAGICKMOD_"]
 else: # *nix
     hasIMagick=0
-    extra_compile_args += [ "-D_GLIBCXX_DEBUG=0","-D_GLIBCXX_DEBUG_PEDANTIC=0", "-DLinuxBuild","-g"] #TODO "-O3"
+    extra_compile_args += [ "-DLinuxBuild","-g"] 
+    extra_link_args += ["-g"] #TODO-0 remove debug
     print "#################################### Check ImageMagick"
     try:
         fnd=0
@@ -106,7 +106,7 @@ for k, v in config_vars.items():
             
 print "#################################### Installing"
 setup(name="isk-daemon",
-      version='0.8',
+      version='0.9',
       description="Server and library for adding content-based (visual) image searching to any image related website or software.",
       long_description=long_description,
       keywords = "imgseek iskdaemon image cbir imagedatabase isk-daemon database searchengine",
