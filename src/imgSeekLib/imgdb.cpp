@@ -1073,7 +1073,7 @@ int resetdb(const int dbId) {
     for (int c = 0; c < 3; c++)
         for (int pn = 0; pn < 2; pn++)
             for (int i = 0; i < 16384; i++) {
-                if (dbSpace[dbId] && dbSpace[dbId]->imgbuckets[c][pn][i])
+                if (dbSpace[dbId])
                     dbSpace[dbId]->imgbuckets[c][pn][i].clear();
             }
 
