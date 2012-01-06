@@ -28,7 +28,8 @@ ake-eggs
 .mr.developer.cfg
 .hg
 .bzr
-imgSeekLib/imgdb.py
+src/imgSeekLib/imgdb.py
+src/imgSeekLib/imgdb_wrap.cpp
 .svn
 *.pyc
 *.pyo
