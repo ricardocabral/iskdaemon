@@ -1000,8 +1000,10 @@ def startIskDaemon():
     
     rootLog.info('| image database initialized')
     rootLog.info('+- Starting HTTP service endpoints...')
-    
-    root = static.File("www/")
+
+    import ui 
+    _ROOT = os.path.dirname(ui.__file__)
+    root = static.File(os.path.join(_ROOT,"admin-www"))
     rootLog.info('| web admin interface listening for requests at http://localhost:%d/'% settings.basePort)
     
     atexit.register(shutdownServer)

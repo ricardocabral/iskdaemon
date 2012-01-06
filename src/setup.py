@@ -103,7 +103,7 @@ def find_data_files(d):
     matches = []
     for root, dirnames, filenames in os.walk(d):
       for filename in filenames:
-          matches.append(os.path.join(root, filename))
+          matches.append(os.path.join(root[3:], filename))
     return matches
 
 print "#################################### Installing"
@@ -126,17 +126,16 @@ setup(name="isk-daemon",
                                       ],
                   include_dirs = include_dirs,
                   library_dirs = library_dirs,
-                  extra_compile_args=extra_compile_args,
-                  extra_link_args=extra_link_args,
+                  extra_compile_args = extra_compile_args,
+                  extra_link_args = extra_link_args,
                   libraries = libraries,
                   swig_opts = ['-c++']
                  )],
       py_modules = ['imgdb'],
       license = 'GPLv2',
-      packages=['imgSeekLib', 'iskdaemon'],
-      package_dir={'iskdaemon': '.'},
+      packages=['imgSeekLib', 'ui'],
       package_data={'imgSeekLib': ['*.so','*.pyd','*.dll'],
-                    'iskdaemon': find_data_files('www'),
+                    'ui': find_data_files('ui/admin-www'), 
                     },
       scripts= ['isk-daemon.py','settings.py'],
       install_requires = ['Twisted >= 8',
