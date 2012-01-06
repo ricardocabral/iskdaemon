@@ -6,13 +6,8 @@ from setuptools import setup, find_packages
 
 # win/linux diffs
 import os
-# unfortunatelly this is not working
-if os.name == 'nt': # fix windows stuff
-    imgSeekLib_package_data = ['*.dll']
-    imgSeekLib_package_data = ['*.pyd']
-else: # linux
-    imgSeekLib_package_data = ['*.so']
 
+# reuse README as package long description
 with open('README.txt') as file:
     long_description = file.read()
 
@@ -99,11 +94,18 @@ class fallible_build_ext(build_ext):
 
 # force C++ linking
 from distutils import sysconfig
-config_vars = sysconfig.get_config_vars()
+config_vars = sysconfig.get_config_vars() #TODO-2 is this really still necessary?
 for k, v in config_vars.items():
     if k.count('LD') and str(v).startswith('gcc'):
         config_vars[k] = v.replace('gcc', 'g++')
             
+def find_data_files(d):
+    matches = []
+    for root, dirnames, filenames in os.walk(d):
+      for filename in filenames:
+          matches.append(os.path.join(root, filename))
+    return matches
+
 print "#################################### Installing"
 setup(name="isk-daemon",
       version='0.9',
@@ -130,8 +132,11 @@ setup(name="isk-daemon",
                   swig_opts = ['-c++']
                  )],
       license = 'GPLv2',
-      packages=['imgSeekLib'],
-      package_data={'imgSeekLib': imgSeekLib_package_data},
+      packages=['imgSeekLib', 'iskdaemon'],
+      package_dir={'iskdaemon': '.'},
+      package_data={'imgSeekLib': ['*.so','*.pyd','*.dll'],
+                    'iskdaemon': find_data_files('www'),
+                    },
       scripts= ['isk-daemon.py','settings.py'],
       install_requires = ['Twisted >= 8',
                           'simplejson',
