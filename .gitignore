@@ -27,6 +27,8 @@ ake-eggs
 .installed.cfg
 .mr.developer.cfg
 .hg
+*.deb
+*.rpm
 .bzr
 src/imgSeekLib/imgdb.py
 src/imgSeekLib/imgdb_wrap.cpp
