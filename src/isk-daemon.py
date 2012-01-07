@@ -29,7 +29,7 @@ import md5
 import atexit
  
 # isk-daemon imports
-import settings
+from core import settings
 from imgSeekLib.ImageDB import ImgDB
 from imgSeekLib import statistics
 from imgSeekLib import utils
@@ -80,7 +80,7 @@ def queryImgID(dbId, id, numres=12, fast=False):
     
     # load balancing
     global ServiceFacadeInstance
-    if settings.isClustered and not imgDB.isImageOnDB(dbId, id):
+    if settings.core.getboolean('cluster','isClustered') and not imgDB.isImageOnDB(dbId, id):
         for iskc in ServiceFacadeInstance.peerAddressMap.values():
             if iskc.hasImgId(dbId, id): # remote instance has this image. Forward query
                 try:
@@ -113,7 +113,7 @@ def addImg(dbId, id, filename, fileIsUrl=False):
     id = int(id)
 
     if fileIsUrl: # download it first
-        tempFName = os.path.expanduser(settings.databasePath) + ('_tmp_%d_%d.jpg' % (dbId,id))
+        tempFName = os.path.expanduser(settings.core.get('database','databasePath')) + ('_tmp_%d_%d.jpg' % (dbId,id))
         urlToFile(filename,tempFName)
         filename = tempFName
     res = 0
@@ -221,12 +221,12 @@ def shutdownServer():
     global hasShutdown
     if hasShutdown: return 1 # already went through a shutdown
     
-    if settings.saveAllOnShutdown:
+    if settings.core.getboolean('daemon','saveAllOnShutdown'):
             saveAllDbs()
             imgDB.closedb()
 
     rootLog.info("Shuting instance down...")
-    reactor.callLater(1, reactor.stop) #IGNORE:E1101
+    reactor.callLater(1, reactor.stop) 
     hasShutdown = True
     return 1
 
@@ -684,7 +684,7 @@ def saveAllDbs():
     @return:  count of persisted db spaces
     """
     
-    return imgDB.savealldbs(os.path.expanduser(settings.databasePath))
+    return imgDB.savealldbs(settings.core.get('database','databasePath'))
 
 def loadAllDbs():
     """
@@ -694,7 +694,7 @@ def loadAllDbs():
     @return:  count of persisted db spaces
     """    
     
-    return imgDB.loadalldbs(os.path.expanduser(settings.databasePath))
+    return imgDB.loadalldbs(settings.core.get('database','databasePath'))
 
 def removeDb(dbid):
     """
@@ -835,7 +835,7 @@ class iskPBClient:
         self.root = object
         # announce myself
         self.root.callRemote("remoteConnected", 
-                          self.settings.bindHostname+":%d"%(self.settings.basePort))
+                          self.settings.core.get('cluster', 'bindHostname')+":%d"%(self.settings.core.getint('daemon','basePort')))
 
     def connectFailed(self, reason):
         self.failedAttempts += 1
@@ -864,12 +864,13 @@ class ServiceFacade(pb.Root):
         self.settings = settings
         self.knownPeers = []
         self.peerAddressMap = {}
-        
-        if self.settings.isClustered:
+        self.externalFullAddr = self.settings.core.get('cluster', 'bindHostname')+":%d"%(self.settings.core.getint('daemon','basePort'))
+
+        if self.settings.core.getboolean('cluster','isClustered'):
             global pbFactory
             pbFactory = pb.PBClientFactory()
-            self.knownPeers = self.settings.seedPeers
-            reactor.callLater(ServiceFacade.peerRefreshRate, self.refreshPeers) #IGNORE:E1101
+            self.knownPeers = self.settings.core.get('cluster', 'seedPeers') #TODO parse/split list
+            reactor.callLater(ServiceFacade.peerRefreshRate, self.refreshPeers) 
             rootLog.info('| Running in cluster mode')            
         else:
             pass
@@ -905,7 +906,7 @@ class ServiceFacade(pb.Root):
                 self.remote_addPeer(addr)
                 
         for peer in self.knownPeers:
-            if peer == (self.settings.bindHostname+":%d"%(self.settings.basePort)):
+            if peer == ():
                 rootLog.error("instance shouldnt have itself as peer, removing")
                 self.knownPeers.remove(peer)
                 continue
@@ -935,13 +936,13 @@ class ServiceFacade(pb.Root):
         for dbid in imgDB.getDBList():
             imgIds[dbid] = imgDB.getImgIdList(dbid) 
                             
-        return [self.knownPeers+[(self.settings.bindHostname+":%d"%(self.settings.basePort))],
+        return [self.knownPeers+[self.externalFullAddr],
                 getGlobalServerStats(),
                 imgIds]
 
     def remote_addPeer(self, addr):
         # dont try to connect to myself
-        if addr == (self.settings.bindHostname+":%d"%(self.settings.basePort)): return False
+        if addr == (self.externalFullAddr): return False
         # add only if new
         if addr not in self.knownPeers:
             self.knownPeers.append(addr)
@@ -957,12 +958,6 @@ def injectCommonDatabaseFacade(instance, prefix):
     for fcn in CommonDatabaseFacadeFunctions:
         setattr(instance, prefix+fcn.__name__, fcn)
 
-def fixSettings():
-    """ fix windows stuff
-    """    
-    if os.name == 'nt': # fix windows stuff
-        settings.databasePath = settings.databasePath.replace('/','\\')
-
 def startIskDaemon():    
     """ cmd-line daemon entry-point
     """
@@ -971,40 +966,34 @@ def startIskDaemon():
     from optparse import OptionParser
         
     parser = OptionParser(version="%prog "+iskVersion)
-    parser.add_option("-f", "--file", dest="filename",
-                      help="read settings from a file other than 'settings.py'", metavar="FILE")
+    #TODO-2 add option
+    #parser.add_option("-f", "--file", dest="filename",
+    #                  help="read settings from a file other than 'settings.py'", metavar="FILE")
     parser.add_option("-q", "--quiet",
                       action="store_false", dest="verbose", default=True,
                       help="don't print debug messages to stdout")
     (options, args) = parser.parse_args()
-    
-    global settings
-    # default vars
-    if options.filename:
-        rootLog.info('+- Reading settings from "%s"' % options.filename)
-        import imp
-        settings = imp.load_source('settings', options.filename)
-    else: # use default        
-        rootLog.info('+- Reading settings from default config file "settings.py"')
-        if settings.startAsDaemon: daemonize.createDaemon()
+   
+    #TODO-2 show which file was read
+    #rootLog.info('+- Reading settings from "%s"' % options.filename)
+    if settings.core.getboolean('daemon','startAsDaemon'): daemonize.createDaemon()
         
     global imgDB
       
-    # sanity-check settings
-    fixSettings()
-
     # misc daemon inits
     rootLog.info('+- Initializing image database (Version %s) ...' % iskVersion)
     imgDB = ImgDB(settings)
-    imgDB.loadalldbs(os.path.expanduser(settings.databasePath))
+    imgDB.loadalldbs(os.path.expanduser(settings.core.get('database', 'databasePath')))
     
     rootLog.info('| image database initialized')
     rootLog.info('+- Starting HTTP service endpoints...')
 
+    basePort = settings.core.getint('daemon', 'basePort')
+
     import ui 
     _ROOT = os.path.dirname(ui.__file__)
     root = static.File(os.path.join(_ROOT,"admin-www"))
-    rootLog.info('| web admin interface listening for requests at http://localhost:%d/'% settings.basePort)
+    rootLog.info('| web admin interface listening for requests at http://localhost:%d/'% basePort)
     
     atexit.register(shutdownServer)
         
@@ -1018,7 +1007,7 @@ def startIskDaemon():
     
         # expose remote command interfaces
         root.putChild('SOAP', SOAPIskResourceInstance)
-        rootLog.info('| listening for SOAP requests at http://localhost:%d/SOAP'% settings.basePort)
+        rootLog.info('| listening for SOAP requests at http://localhost:%d/SOAP'% basePort)
     else:
         rootLog.info('| Not listening for SOAP requests. Installing "SOAPpy" python package to enable it.')
 
@@ -1028,22 +1017,22 @@ def startIskDaemon():
 
     # expose remote command interfaces
     root.putChild('RPC', XMLRPCIskResourceInstance)
-    rootLog.info('| listening for XML-RPC requests at http://localhost:%d/RPC'% settings.basePort)
+    rootLog.info('| listening for XML-RPC requests at http://localhost:%d/RPC'% basePort)
 
     root.putChild('export', DataExportResource())
-    rootLog.debug('| listening for data export requests at http://localhost:%d/export'% settings.basePort)
+    rootLog.debug('| listening for data export requests at http://localhost:%d/export'% basePort)
 
     # start twisted reactor
     try:
-        reactor.listenTCP(settings.basePort, server.Site(root)) 
+        reactor.listenTCP(basePort, server.Site(root)) 
         rootLog.info('| HTTP service endpoints started. Binded to all local network interfaces.')
     except CannotListenError:
-        rootLog.error("Socket port %s seems to be in use, is there another instance already running ? Try supplying a different one on the command line as the first argument. Cannot start isk-daemon." % settings.basePort)
+        rootLog.error("Socket port %s seems to be in use, is there another instance already running ? Try supplying a different one on the command line as the first argument. Cannot start isk-daemon." % basePort)
         return
         
     rootLog.debug('+- Starting internal service endpoint...')
-    reactor.listenTCP(settings.basePort+100, pb.PBServerFactory(ServiceFacadeInstance)) 
-    rootLog.debug('| internal service listener started at pb://localhost:%d'% (settings.basePort+100))
+    reactor.listenTCP(basePort+100, pb.PBServerFactory(ServiceFacadeInstance)) 
+    rootLog.debug('| internal service listener started at pb://localhost:%d'% (basePort+100))
     rootLog.info('| Binded to all local network interfaces.')
     
     rootLog.info('+ init finished. Waiting for requests ...')
