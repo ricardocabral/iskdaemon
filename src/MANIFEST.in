@@ -1,11 +1,23 @@
-include AUTHORS.txt
-include COPYING.txt
-include ImageMagick-License.txt
+include *.txt
+include *.nsi
+include *.conf
+include *.spec
+global-include *.h
 recursive-include api-docs *
-recursive-include www *
 recursive-include test *
+
+include ui/admin-gwt/.project
+include ui/admin-gwt/.classpath
+recursive-include ui/admin-gwt/src *
+recursive-include ui/admin-www *
+prune ui/admin-gwt/war
+prune ui/admin-gwt/gwt-unitCache
+prune ui/admin-gwt/.gwt
+
 global-exclude *~
 global-exclude *.tmp
 global-exclude *.bak
 global-exclude *.pyc
 global-exclude *.old
+global-exclude *.DS_Store
+global-exclude *war*
