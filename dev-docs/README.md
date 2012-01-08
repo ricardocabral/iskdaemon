@@ -22,6 +22,12 @@ Ubuntu Dev environment
     git config --global user.name "Ricardo Niederberger Cabral"
     git config --global user.email "ricardo@isnotworking.com"
 
+    Packaging tutorial: https://wiki.ubuntu.com/PackagingGuide/Python
+
+    export DEBFULLNAME="Ricardo Niederberger Cabral"
+    export DEBEMAIL="ricardo.cabral@imgseek.net"
+
+
 Windows
 -------
 

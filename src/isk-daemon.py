@@ -991,8 +991,13 @@ def startIskDaemon():
     basePort = settings.core.getint('daemon', 'basePort')
 
     import ui 
-    _ROOT = os.path.dirname(ui.__file__)
-    root = static.File(os.path.join(_ROOT,"admin-www"))
+    _ROOT = os.path.join(os.path.dirname(ui.__file__),"admin-www")
+    if not os.path.exists(_ROOT): # on Windows? Try serving from current file dir
+        import sys
+        pathname, scriptname = os.path.split(sys.argv[0])
+        _ROOT = os.path.join(pathname,'ui'+ os.sep + "admin-www")
+    rootLog.info('| serving web admin from ' + _ROOT)        
+    root = static.File(_ROOT)
     rootLog.info('| web admin interface listening for requests at http://localhost:%d/'% basePort)
     
     atexit.register(shutdownServer)

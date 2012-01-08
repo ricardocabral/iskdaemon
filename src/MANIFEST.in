@@ -2,9 +2,10 @@ include *.txt
 include *.nsi
 include *.conf
 include *.spec
-global-include *.h
 recursive-include api-docs *
 recursive-include test *
+
+include imgSeekLib/*.h
 
 include ui/admin-gwt/.project
 include ui/admin-gwt/.classpath

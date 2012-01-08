@@ -34,9 +34,9 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          icon='www\\favicon.ico',
+          icon='ui\\admin-www\\favicon.ico',
           console=False)
-docfiles = Datafiles(['settings.py','AUTHORS.txt','COPYING.txt','README.txt','instsrv.exe','srvany.exe'] + AllFilesIn('www'))
+docfiles = Datafiles(['isk-daemon.conf','AUTHORS.txt','COPYING.txt','README.txt','instsrv.exe','srvany.exe'] + AllFilesIn('ui\\admin-www'))
 coll = COLLECT( exe,
                a.binaries,
                a.zipfiles,
