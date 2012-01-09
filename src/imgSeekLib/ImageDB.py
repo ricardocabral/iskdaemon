@@ -21,9 +21,6 @@
 #
 ###############################################################################
 
-"""Database module
-"""
-
 # standard modules
 import sys
 import os
@@ -37,13 +34,14 @@ import utils
 try:
     import imgdb
 except:
-    logging.error("""Warning: Unable to load the C++ extension \"imgdb.so(pyd)\" module.""")
+    logging.error("""Unable to load the C++ extension \"_imgdb.so(pyd)\" module.""")
+    logging.error("""See http://www.imgseek.net/isk-daemon/documents-1/compiling""")
     traceback.print_exc()
     sys.exit()
 
-log = logging.getLogger('ImageDB')
+log = logging.getLogger('imageDB')
 
-SUPPORTED_IMG_EXTS = [ 'jpeg', 'jpg', 'gif', 'png', 'rgb', 'pbm', 'pgm', 'ppm', 'tiff', 'tif', 'rast', 'xbm', 'bmp' ] # to help determining img format from extension
+SUPPORTED_IMG_EXTS = [ 'jpeg', 'jpg', 'gif', 'png', 'rgb', 'jpe', 'pbm', 'pgm', 'ppm', 'tiff', 'tif', 'rast', 'xbm', 'bmp' ] # to help determining img format from extension
 
 def safe_str(obj):
     """ return the byte string representation of obj """
@@ -135,7 +133,7 @@ class ImgDB:
             del self.dbSpaces[dbId]
             return None
         # adjust last added image id
-        log.info('Database loaded: ' + str(dbSpace))
+        log.info('| Database loaded, id=' + str(dbSpace))
         dbSpace.lastId = self.getImgCount(dbSpace.id) + 1
         return dbId
 
@@ -154,7 +152,7 @@ class ImgDB:
             dbSpace = self.dbSpaces[dbId]
             dbSpace.lastSaveTime = time.time()
             dbSpace.fileName = fname
-            log.info('Database saved:' + str(dbSpace) + ' to '+fname)
+            log.info('| Database id=%s saved to "%s"' % ( dbSpace, fname))
             return 1
         
     @utils.dumpArgs
@@ -164,7 +162,7 @@ class ImgDB:
             for dbid in self.getDBList():
                 self.dbSpaces[dbid] = DBSpace(dbid)
                 self.dbSpaces[dbid].lastId = self.getImgCount(dbid) + 1
-            log.debug('Database [%s] loaded count: %d (ids=%s)' %(fname, dbCount,self.dbSpaces.keys()))
+            log.debug('| Database (%s) loaded with %d spaces' %(fname, dbCount))
             self.globalFileName = fname
             return dbCount            
         except RuntimeError, e:
@@ -179,7 +177,7 @@ class ImgDB:
         if not res:
             log.error("Error saving image database")
             return res
-        log.info('All database spaces saved at '+fname)
+        log.info('| All database spaces saved at "%s"' % fname)
         return res
             
     @utils.requireKnownDbId            
@@ -237,8 +235,6 @@ class ImgDB:
                time.time() - dbSpace.lastSaveTime > self._settings.core.getint('database','saveInterval'):
                 dbSpace.lastSaveTime = time.time()
                 self.savealldbs()
-        log.debug("addImage() ret="+str(res))
-
         return res
 
     @utils.requireKnownDbId

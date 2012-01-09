@@ -1,3 +1,38 @@
+Release checklist
+-----------------
+
+    cd imgSeekLib
+    python test_all.py
+
+    sed -i '' -e's/iskVersion = \"0.9\"/iskVersion = \"0.9.1\"/' core/imgdbapi.py 
+    sed -i '' -e's/0.9/0.9.1/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
+    sed -i '' -e's/Jan 2012/Jan 2012/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
+ 
+    git commit -a
+    git push
+    git tag "v1.3"
+    git push --tags        
+
+    python setup.py register
+    python setup.py sdist --formats=gztar,zip
+    python setup.py bdist
+
+    scp dist/*.gz rnc@192.168.0.108:
+    scp dist/*.gz rnc@192.168.0.107:
+
+    ssh rnc@192.168.0.107
+    rm -fr deb
+    mkdir deb
+    mv *.gz deb
+    cd deb
+    export DEBFULLNAME="Ricardo Niederberger Cabral"
+    export DEBEMAIL="ricardo.cabral@imgseek.net"
+    tar zxvf ~/*.gz
+    cd isk-daemon
+    debuild -us -uc 
+    sudo debi
+    isk-daemon.py
+
 OSX Dev environment
 -------------------
 
