@@ -7,7 +7,11 @@ Release checklist
     sed -i '' -e's/iskVersion = \"0.9\"/iskVersion = \"0.9.1\"/' core/imgdbapi.py 
     sed -i '' -e's/0.9/0.9.1/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
     sed -i '' -e's/Jan 2012/Jan 2012/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
+    sed -i '' -e's/0.9/0.9.1/' setup.py 
  
+    gen py docs
+    http://www.imgseek.net/isk-daemon/documents-1/api-reference
+
     git commit -a
     git push
     git tag "v1.3"
@@ -32,6 +36,12 @@ Release checklist
     debuild -us -uc 
     sudo debi
     isk-daemon.py
+
+    https://github.com/ricardocabral/iskdaemon/downloads
+    http://freecode.com/
+    http://www.imgseek.net/news
+    http://www.imgseek.net/isk-daemon/changelog
+    http://www.imgseek.net/isk-daemon/download
 
 OSX Dev environment
 -------------------
