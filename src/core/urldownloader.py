@@ -35,8 +35,6 @@ def urlToFile(theurl, destfile):
     f.close()
     return True
 
-import md5
-
 def urlData(theurl):
     if not theurl: return None
     if len(theurl) < 12: return None
