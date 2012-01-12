@@ -23,14 +23,15 @@
 ###############################################################################
 
 import unittest
-from ImageDB import ImgDB 
+from imgSeekLib.ImageDB import ImgDB 
+from core import settings
 
-test_images_dir = '../test/data/'
+test_images_dir = 'test/data/'
 
 class ImageDBTest(unittest.TestCase):
     
     def setUp(self):
-        self.imgdb = ImgDB()
+        self.imgdb = ImgDB(settings)
         self.assertEqual(1,self.imgdb.createdb(1))
 
     def tearDown(self):
