@@ -1,7 +1,5 @@
 Promote
 ========
-Got a successful project you'd like added to this page? Mail a brief description and an URL (if appropriate) to success at twistedmatrix dot com!
-http://twistedmatrix.com/trac/wiki/ProjectsUsingTwisted
 
 memcached
 =========

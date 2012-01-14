@@ -78,7 +78,7 @@ class DBSpace:
             if not key.startswith('__'):
                 value = getattr(self,key)
                 if not callable(value):
-                    reprs += key + "=" + str(value) + " ; "        
+                    reprs += key + "=" + str(value) + "; "
         return reprs
         
     """
@@ -133,7 +133,7 @@ class ImgDB:
             del self.dbSpaces[dbId]
             return None
         # adjust last added image id
-        log.info('| Database loaded, id=' + str(dbSpace))
+        log.info('| Database loaded: ' + str(dbSpace))
         dbSpace.lastId = self.getImgCount(dbSpace.id) + 1
         return dbId
 

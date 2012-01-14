@@ -316,13 +316,13 @@ class ImageDBTest(unittest.TestCase):
         self.imgdb.addKeywordImg(1,7,3)
         self.imgdb.addKeywordImg(1,7,2)
 
-#std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords){
+        #std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords){
+        #dv [[8L, 100], [6L, 100], [19L, 15.272009339950403], [22L, 14.274818233138154], [7L, 14.086848507770208]]
 
         dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [2,3]) # AND
         ids = [r[0] for r in dv]
         print ids
         self.assert_(7 in ids)
-        #dv [[8L, 100], [6L, 100], [19L, 15.272009339950403], [22L, 14.274818233138154], [7L, 14.086848507770208]]
         self.assertEqual(1,len(dv))
 
         dv = self.imgdb.queryImgIDKeywords(1,6, 4, 0, [2,3]) # OR
@@ -330,14 +330,26 @@ class ImageDBTest(unittest.TestCase):
         print ids
         self.assert_(7 in ids)
         self.assert_(6 in ids)
-        #dv [[8L, 100], [6L, 100], [19L, 15.272009339950403], [22L, 14.274818233138154], [7L, 14.086848507770208]]
         self.assertEqual(2,len(dv))
 
         dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [3])
         ids = [r[0] for r in dv]
         print ids
         self.assert_(7 in ids)
-        #dv [[8L, 100], [6L, 100], [19L, 15.272009339950403], [22L, 14.274818233138154], [7L, 14.086848507770208]]
+        self.assertEqual(1,len(dv))
+    
+        # no keywords
+        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [])
+        ids = [r[0] for r in dv]
+        print ids
+        print dv
+        self.assertEqual(0,len(dv))
+
+        # random keywords
+        dv = self.imgdb.queryImgIDKeywords(1,0, 4, 1, [3])
+        ids = [r[0] for r in dv]
+        print ids
+        self.assert_(7 in ids)
         self.assertEqual(1,len(dv))
 
     def testqueryImgIDFastKeywords(self):

@@ -503,21 +503,19 @@ def queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @type  dbId: number
     @param dbId: Database space id.
     @type  imgId: number
-    @param imgId Target image id.
+    @param imgId Target image id. If '0', random images containing the target keywords will be returned.
     @type  numres: number
     @param numres Number of results desired
     @type  kwJoinType: number
     @param kwJoinType logical operator for keywords: 1 for AND, 0 for OR
     @type  keywords: string
-    @param keywords comma separated list of keyword ids. An empty string will return random images.
+    @param keywords comma separated list of keyword ids.
     @rtype:   array
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
     dbId = int(dbId)
     imgId = int(imgId)
     keywordIds = [int(x) for x in keywords.split(',') if len(x) > 0]
-    if len(keywordIds) == 0:
-        keywordIds=[0]
     return imgDB.queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords)
 
 def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
@@ -528,21 +526,19 @@ def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @type  dbId: number
     @param dbId: Database space id.
     @type  imgId: number
-    @param imgId Target image id.
+    @param imgId Target image id. If '0', random images containing the target keywords will be returned.
     @type  numres: number
     @param numres Number of results desired
     @type  kwJoinType: number
     @param kwJoinType logical operator for keywords: 1 for AND, 0 for OR
     @type  keywords: string
-    @param keywords comma separated list of keyword ids. An empty string will return random images.
+    @param keywords comma separated list of keyword ids. 
     @rtype:   array
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
     dbId = int(dbId)
     imgId = int(imgId)
     keywordIds = [int(x) for x in keywords.split(',') if len(x) > 0]
-    if len(keywordIds) == 0:
-        keywordIds=[0]
     return imgDB.queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywordIds)
 
 def mostPopularKeywords(dbId, imgs, excludedKwds, count, mode):

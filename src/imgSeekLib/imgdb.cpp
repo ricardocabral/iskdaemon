@@ -508,7 +508,6 @@ int loadalldbs(char* filename) {
 		return 0;
 	}
 
-
 	for (int k = 0; k < sz; k++) { // for each db
 		f.read((char *) &(dbId), sizeof(int)); // db id
 		if (!f.good()) {
@@ -521,7 +520,6 @@ int loadalldbs(char* filename) {
 	f.close();
 	return res;
 }
-
 
 int savedbtostream(const int dbId, std::ofstream& f) {
 	/*
@@ -1254,24 +1252,26 @@ std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, 
 		return std::vector<double>();
 	}
 
+	if (keywords.size() < 1) { 
+		cerr << "ERROR: At least one keyword must be supplied" << endl ;
+		return std::vector<double>();        
+	} 
+
 	// populate filter
 	intVectorIterator it = keywords.begin();
 	bloom_filter* bf = 0;
-	if (*it == 0) {
-		// querying all tags
-	} else {
-		// OR or AND each kwd postings filter to get final filter
-		// start with the first one
-		bf = new bloom_filter(*(getKwdPostings(*it)->imgIdsFilter));
-		it++;
-		for (; it != keywords.end(); it++) { // iterate the rest
-			if (kwJoinType) { // and'd
-				(*bf) &= *(getKwdPostings(*it)->imgIdsFilter);
-			} else { // or'd
-				(*bf) |= *(getKwdPostings(*it)->imgIdsFilter);
-			}
-		}
-	}
+
+    // OR or AND each kwd postings filter to get final filter
+    // start with the first one
+    bf = new bloom_filter(*(getKwdPostings(*it)->imgIdsFilter));
+    it++;
+    for (; it != keywords.end(); it++) { // iterate the rest
+        if (kwJoinType) { // and'd
+            (*bf) &= *(getKwdPostings(*it)->imgIdsFilter);
+        } else { // or'd
+            (*bf) |= *(getKwdPostings(*it)->imgIdsFilter);
+        }
+    }
 
 	if (id == 0) { // random images with these kwds
 
