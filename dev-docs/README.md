@@ -1,8 +1,8 @@
 Release checklist
 -----------------
 
-    cd imgSeekLib
-    python test_all.py
+    python test_imgdb.py
+    python test/test_api.py
 
     sed -i '' -e's/iskVersion = \"0.9\"/iskVersion = \"0.9.1\"/' core/imgdbapi.py 
     sed -i '' -e's/0.9/0.9.1/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
