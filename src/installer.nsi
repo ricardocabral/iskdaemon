@@ -62,27 +62,24 @@ Section "MainSection" SEC01
 
   MessageBox MB_YESNO "Install and run as a Windows service?" /SD IDYES IDNO false2
 
+  DetailPrint "Stopping service..."
   ; Stop a service and waits for file release
   SimpleSC::StopService "iskdaemon" 1 60
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
 
+  DetailPrint "Removing service..."
   ; Remove a service
   SimpleSC::RemoveService "iskdaemon"
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
 
-  ; Install service
-  ExecWait '$INSTDIR\instsrv "iskdaemon" "$INSTDIR\srvany.exe"'
-
   DetailPrint "Installing service..."
-  ; Write registry settings for service
-  WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\iskdaemon\Parameters" Application "$INSTDIR\isk-daemon.exe"
-  WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\iskdaemon\Parameters" AppDirectory "$INSTDIR"
+  ; Install service
+  ExecWait '$INSTDIR\isk-daemon.exe install'
 
-  ; Set the description of a service
-  SimpleSC::SetServiceDescription "iskdaemon" "Image similarity search server."
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
   DetailPrint "... service installed."
   DetailPrint "Starting service..."
+
   ; Start a service
   SimpleSC::StartService "iskdaemon" "" 60
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
@@ -118,6 +115,7 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   
   ExecShell open "https://docs.google.com/a/imgseek.net/spreadsheet/viewform?formkey=dEFQb3hxOXlwYThMUUJ1VnpjMmRDWWc6MQ"
+  ExecShell open "http://127.0.0.1:31128/"
 SectionEnd
 
 

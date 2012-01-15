@@ -23,7 +23,7 @@ def Datafiles(filenames, **kw):
         for filename in filenames
         if os.path.isfile(filename))
 
-a = Analysis([os.path.join(HOMEPATH,'support\\_mountzlib.py'), os.path.join(CONFIGDIR,'support\\useUnicode.py'), 'e:\\iskdaemon\\src\\isk-daemon.py'],
+a = Analysis([os.path.join(HOMEPATH,'support\\_mountzlib.py'), os.path.join(CONFIGDIR,'support\\useUnicode.py'), 'win32_svc_wrapper.py'],
              pathex=['E:\\iskdaemon\\3rd\\pyinstaller\\trunk'],
              hookspath=None)
 pyz = PYZ(a.pure)
@@ -36,7 +36,7 @@ exe = EXE(pyz,
           upx=True,
           icon='ui\\admin-www\\favicon.ico',
           console=False)
-docfiles = Datafiles(['isk-daemon.conf','AUTHORS.txt','COPYING.txt','README.txt','instsrv.exe','srvany.exe'] + AllFilesIn('ui\\admin-www'))
+docfiles = Datafiles(['isk-daemon.conf','AUTHORS.txt','COPYING.txt','README.txt'] + AllFilesIn('ui\\admin-www')+ AllFilesIn('plugins'))
 coll = COLLECT( exe,
                a.binaries,
                a.zipfiles,

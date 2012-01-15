@@ -24,6 +24,14 @@ Release checklist
     python setup.py sdist --formats=gztar,zip
     python setup.py bdist
 
+    # Windows
+    e:
+    cd iskdaemon\src
+    "c:\Program Files\NSIS\makensis.exe" installer.nsi
+    rmdir /S /Q dist\isk-daemon
+   ..\3rd\pyinstaller\trunk\pyinstaller.py isk-daemon.spec 
+    
+
     scp dist/*.gz rnc@192.168.0.108:
     scp dist/*.gz rnc@192.168.0.107:
 
