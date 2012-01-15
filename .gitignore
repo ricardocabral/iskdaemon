@@ -30,6 +30,7 @@ ake-eggs
 *.deb
 *.rpm
 .bzr
+epyhtml
 src/imgSeekLib/imgdb.py
 src/imgSeekLib/imgdb_wrap.cpp
 .svn

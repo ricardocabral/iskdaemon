@@ -10,8 +10,8 @@ Release checklist
     sed -i '' -e's/0.9/0.9.1/' setup.py 
  
     # gen py docs
-    epydoc -v --html --no-sourcecode --no-frames --no-private core/imgdbapi.py
-    open html/core.imgdbapi-module.html
+    epydoc -v --html --no-sourcecode --no-frames --no-private -o epyhtml core/imgdbapi.py
+    open epyhtml/core.imgdbapi-module.html
     copy/paste to   
     http://www.imgseek.net/isk-daemon/documents-1/api-reference
 
