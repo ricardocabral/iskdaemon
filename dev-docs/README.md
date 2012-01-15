@@ -9,7 +9,10 @@ Release checklist
     sed -i '' -e's/Jan 2012/Jan 2012/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
     sed -i '' -e's/0.9/0.9.1/' setup.py 
  
-    gen py docs
+    # gen py docs
+    epydoc -v --html --no-sourcecode --no-frames --no-private core/imgdbapi.py
+    open html/core.imgdbapi-module.html
+    copy/paste to   
     http://www.imgseek.net/isk-daemon/documents-1/api-reference
 
     git commit -a
@@ -50,6 +53,7 @@ OSX Dev environment
     sudo port install swig-python
     sudo easy_install twisted
     sudo port install imagemagick
+    sudo easy_install epydoc
 
 Ubuntu Dev environment
 ----------------------

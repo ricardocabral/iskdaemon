@@ -47,6 +47,14 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(1,self.imgdb.loaddb(1,test_images_dir+"imgdb.data"))
         self.assertEqual(1,self.imgdb.getImgCount(1))
 
+    def testPopular(self):
+        #TODO
+        # make sure the shuffled sequence does not lose any elements        
+        self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00006.JPG",6,))
+        self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00007.JPG",7))
+        self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00008.JPG",8))
+        self.assertEqual(3,self.imgdb.getImgCount(1))
+ 
     def testAddImage(self):
         # make sure the shuffled sequence does not lose any elements        
         self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00006.JPG",6,))

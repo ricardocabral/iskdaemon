@@ -1197,7 +1197,6 @@ std::vector<int> getKeywordsImg(const int dbId, const int id){
 	return ret;
 }
 
-// query by keywords
 std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs, std::vector<int> excludedKwds, int count, int mode) {
 
 	kwdFreqMap freqMap = kwdFreqMap();
@@ -1240,7 +1239,6 @@ std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs,
 	}
 
 	return res;
-
 }
 
 // query by keywords

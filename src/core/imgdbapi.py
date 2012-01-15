@@ -21,6 +21,10 @@
 #
 ###############################################################################
 
+__doc__ = '''
+@undocumented:  getClusterKeywords getClusterDb getKeywordsPopular getKeywordsVisualDistance getIdsBloomFilter
+ '''
+
 import time
 import logging
 import os
@@ -298,7 +302,7 @@ def calcImgDiff(dbId, id1,  id2):
     
     return imgDB.calcDiff(dbId, id1,  id2)
 
-def getImgAvgl(dbId, id1):
+def getImgAvgl(dbId, id):
     """
     Return image average color levels on the three color channels (YIQ color system)
 
@@ -306,32 +310,12 @@ def getImgAvgl(dbId, id1):
     @param dbId: Database space id.
     @type  id: number
     @param id: Target image id.
-    @type  numres: number
-    @param numres: The y intercept of the line.
-    @rtype:   array
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    @rtype:   array of double
+    @return:  values for YIQ color channels
     """    
     dbId = int(dbId)
     id1 = int(id1)
     return imgDB.getImageAvgl(dbId, id1)
-
-def getDbIdsBloomFilter(dbId):
-    """
-    Returns a byte array (bloom filter) representing image ids on this server instance.
-    
-    B{Not yet implemented}    
-
-    @type  dbId: number
-    @param dbId: Database space id.
-    @type  id: number
-    @param id: Target image id.
-    @type  numres: number
-    @param numres: The y intercept of the line.
-    @rtype:   array
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
-    """    
-    dbId = int(dbId)
-    return imgDB.getIdsBloomFilter(dbId)
 
 def getDbList():
     """
@@ -426,8 +410,6 @@ def getClusterKeywords(dbId, numClusters,keywords):
 
     @type  dbId: number
     @param dbId: Database space id.
-    @type  id: number
-    @param id: Target image id.
     @rtype:   boolean
     @return:  true if image id exists
     """    
@@ -440,8 +422,6 @@ def getClusterDb(dbId, numClusters):
 
     @type  dbId: number
     @param dbId: Database space id.
-    @type  id: number
-    @param id: Target image id.
     @rtype:   boolean
     @return:  true if image id exists
     """    
@@ -454,8 +434,6 @@ def getKeywordsPopular(dbId, numres):
 
     @type  dbId: number
     @param dbId: Database space id.
-    @type  id: number
-    @param id: Target image id.
     @rtype:   boolean
     @return:  true if image id exists
     """    
@@ -468,8 +446,6 @@ def getKeywordsVisualDistance(dbId, distanceType,  keywords):
 
     @type  dbId: number
     @param dbId: Database space id.
-    @type  id: number
-    @param id: Target image id.
     @rtype:   boolean
     @return:  true if image id exists
     """    
@@ -483,9 +459,9 @@ def getAllImgsByKeywords(dbId, numres, kwJoinType, keywords):
     @type  dbId: number
     @param dbId: Database space id.
     @type  kwJoinType: number
-    @param kwJoinType Logical operator for target keywords: 1 for AND, 0 for OR
+    @param kwJoinType: Logical operator for target keywords: 1 for AND, 0 for OR
     @type  keywords: string
-    @param keywords comma separated list of keyword ids. An empty string will return random images.
+    @param keywords: comma separated list of keyword ids. An empty string will return random images.
     @rtype:   array
     @return:  array of image ids
     """    
@@ -507,9 +483,9 @@ def queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @type  numres: number
     @param numres Number of results desired
     @type  kwJoinType: number
-    @param kwJoinType logical operator for keywords: 1 for AND, 0 for OR
+    @param kwJoinType: logical operator for keywords: 1 for AND, 0 for OR
     @type  keywords: string
-    @param keywords comma separated list of keyword ids.
+    @param keywords: comma separated list of keyword ids.
     @rtype:   array
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
@@ -526,13 +502,13 @@ def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @type  dbId: number
     @param dbId: Database space id.
     @type  imgId: number
-    @param imgId Target image id. If '0', random images containing the target keywords will be returned.
+    @param imgId: Target image id. If '0', random images containing the target keywords will be returned.
     @type  numres: number
-    @param numres Number of results desired
+    @param numres: Number of results desired
     @type  kwJoinType: number
-    @param kwJoinType logical operator for keywords: 1 for AND, 0 for OR
+    @param kwJoinType: logical operator for keywords: 1 for AND, 0 for OR
     @type  keywords: string
-    @param keywords comma separated list of keyword ids. 
+    @param keywords: comma separated list of keyword ids. 
     @rtype:   array
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
@@ -548,13 +524,13 @@ def mostPopularKeywords(dbId, imgs, excludedKwds, count, mode):
     @type  dbId: number
     @param dbId Database space id.
     @type  imgs: string
-    @param imgs Comma separated list of target image ids
+    @param imgs: Comma separated list of target image ids
     @type  excludedKwds: string
-    @param excludedKwds Comma separated list of keywords ids to be excluded from the frequency count
+    @param excludedKwds: Comma separated list of keywords ids to be excluded from the frequency count
     @type  count: number
     @param count Number of keyword results desired
     @type  mode: number
-    @param mode ignored, will be used on future versions.
+    @param mode: ignored, will be used on future versions.
     @rtype:   array
     @return:  array of keyword ids and frequencies: [kwd1_id, kwd1_freq, kwd2_id, kwd2_freq, ...]
     """    
@@ -737,7 +713,6 @@ CommonDatabaseFacadeFunctions = [
                                  calcImgAvglDiff,
                                  calcImgDiff,
                                  getImgAvgl,
-                                 getDbIdsBloomFilter,
                                  getDbList,
                                  getDbDetailedList,
                                  getDbImgIdList,
