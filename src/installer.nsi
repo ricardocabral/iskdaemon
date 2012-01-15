@@ -10,7 +10,7 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
-SetCompressor bzip2
+SetCompressor /SOLID lzma
 
 ; MUI 1.67 compatible 
 !include "MUI.nsh"
@@ -48,14 +48,17 @@ var ICONS_GROUP
 
 ; MUI end ------
 
+!define ARCH "$%PROCESSOS_ARCHITECTURE%"
+
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup.exe"
+OutFile "isk-daemon_${PRODUCT_VERSION}_$%PROCESSOR_ARCHITECTURE%_setup.exe"
 InstallDir "$PROGRAMFILES\isk-daemon"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
 Section "MainSection" SEC01
+
   SetOutPath "$INSTDIR"
   SetOverwrite try
   File /r "dist\isk-daemon\*"

@@ -4,10 +4,10 @@ Release checklist
     python test_imgdb.py
     python test/test_api.py
 
-    sed -i '' -e's/iskVersion = \"0.9\"/iskVersion = \"0.9.1\"/' core/imgdbapi.py 
-    sed -i '' -e's/0.9/0.9.1/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
+    sed -i '' -e's/iskVersion = \"0.9.1\"/iskVersion = \"0.9.2\"/' core/imgdbapi.py 
+    sed -i '' -e's/0.9.1/0.9.2/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
     sed -i '' -e's/Jan 2012/Jan 2012/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
-    sed -i '' -e's/0.9/0.9.1/' setup.py 
+    sed -i '' -e's/0.9.1/0.9.2/' setup.py 
  
     # gen py docs
     epydoc -v --html --no-sourcecode --no-frames --no-private -o epyhtml core/imgdbapi.py
@@ -27,11 +27,11 @@ Release checklist
     # Windows
     e:
     cd iskdaemon\src
-    "c:\Program Files\NSIS\makensis.exe" installer.nsi
     rmdir /S /Q dist\isk-daemon
-   ..\3rd\pyinstaller\trunk\pyinstaller.py isk-daemon.spec 
-    
+    ..\3rd\pyinstaller\trunk\pyinstaller.py isk-daemon.spec 
+    "c:\Program Files\NSIS\makensis.exe" installer.nsi
 
+    # Linux
     scp dist/*.gz rnc@192.168.0.108:
     scp dist/*.gz rnc@192.168.0.107:
 

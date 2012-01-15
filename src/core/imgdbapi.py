@@ -39,7 +39,7 @@ remoteCache = None    # global remote cache (memcached) singleton
 pbFactory = None     # perspective factory
 daemonStartTime = time.time()
 hasShutdown = False
-iskVersion = "0.9.1"
+iskVersion = "0.9.2"
 
 # misc daemon inits
 rootLog = logging.getLogger('imgdbapi')
