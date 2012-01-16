@@ -18,7 +18,9 @@ Release checklist
     copy/paste to   
     http://www.imgseek.net/isk-daemon/documents-1/api-reference
 
-    python setup.py sdist --formats=gztar,zip
+    python setup.py sdist --formats=gztar,zip register upload
+    #python setup.py register
+    #python setup.py sdist register upload
     python setup.py bdist
 
     # Windows
@@ -50,14 +52,12 @@ Release checklist
     git tag "v0.9.2"
     git push --tags        
 
-    python setup.py register
-
     https://github.com/ricardocabral/iskdaemon/downloads
-    http://freecode.com/
-    http://www.imgseek.net/news
     http://www.imgseek.net/isk-daemon/changelog
     http://www.imgseek.net/isk-daemon/download
-
+    http://www.imgseek.net/news
+    http://freecode.com/
+ 
 OSX Dev environment
 -------------------
 
