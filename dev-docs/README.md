@@ -1,13 +1,16 @@
 Release checklist
 -----------------
 
-    python test_imgdb.py
-    python test/test_api.py
-
     sed -i '' -e's/iskVersion = \"0.9.1\"/iskVersion = \"0.9.2\"/' core/imgdbapi.py 
     sed -i '' -e's/0.9.1/0.9.2/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
     sed -i '' -e's/Jan 2012/Jan 2012/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
     sed -i '' -e's/0.9.1/0.9.2/' setup.py 
+    sed -i '' -e's/0.9/0.9.2/' installer.nsi 
+
+    compile GWT admin ui
+
+    python test_imgdb.py
+    python test/test_api.py
  
     # gen py docs
     epydoc -v --html --no-sourcecode --no-frames --no-private -o epyhtml core/imgdbapi.py
@@ -15,12 +18,6 @@ Release checklist
     copy/paste to   
     http://www.imgseek.net/isk-daemon/documents-1/api-reference
 
-    git commit -a
-    git push
-    git tag "v1.3"
-    git push --tags        
-
-    python setup.py register
     python setup.py sdist --formats=gztar,zip
     python setup.py bdist
 
@@ -42,11 +39,18 @@ Release checklist
     cd deb
     export DEBFULLNAME="Ricardo Niederberger Cabral"
     export DEBEMAIL="ricardo.cabral@imgseek.net"
-    tar zxvf ~/*.gz
+    tar zxvf *.gz
     cd isk-daemon
     debuild -us -uc 
     sudo debi
-    isk-daemon.py
+    iskdaemon.py
+
+    git commit -a
+    git push
+    git tag "v0.9.2"
+    git push --tags        
+
+    python setup.py register
 
     https://github.com/ricardocabral/iskdaemon/downloads
     http://freecode.com/

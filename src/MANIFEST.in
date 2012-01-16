@@ -11,6 +11,7 @@ include ui/admin-gwt/.project
 include ui/admin-gwt/.classpath
 recursive-include ui/admin-gwt/src *
 recursive-include ui/admin-www *
+recursive-include debian *
 prune ui/admin-gwt/war
 prune ui/admin-gwt/gwt-unitCache
 prune ui/admin-gwt/.gwt
