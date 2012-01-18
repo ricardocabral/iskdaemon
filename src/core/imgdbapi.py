@@ -25,6 +25,9 @@ __doc__ = '''
 @undocumented:  getClusterKeywords getClusterDb getKeywordsPopular getKeywordsVisualDistance getIdsBloomFilter
  '''
 
+# More epydoc fields:
+# http://epydoc.sourceforge.net/manual-fields.html
+
 import time
 import logging
 import os
@@ -63,6 +66,8 @@ def queryImgID(dbId, id, numres=12, fast=False):
     @type  numres: number
     @param numres: Number of results to return. The target image is on the result list.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
     dbId = int(dbId)
@@ -98,6 +103,8 @@ def addImg(dbId, id, filename, fileIsUrl=False):
     @type  fileIsUrl: boolean
     @param fileIsUrl: if true, filename is interpreted as an HTTP url and the remote image it points to downloaded and saved to a temporary location (same directory where database file is) before being added to database.
     @rtype:   number
+    
+    @since: 0.7
     @return:  1 in case of success.
     """
     dbId = int(dbId)
@@ -130,6 +137,8 @@ def saveDb(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  1 in case of success.
     """        
     dbId = int(dbId)
@@ -144,6 +153,8 @@ def saveDbAs(dbId, filename):
     @type  filename: string
     @param filename: Target filesystem full path of the file where data should be stored at. B{NOTE}: This data file contains a single database space and should be used for import/export purposes only. Do not try to load it with a call to L{loadAllDbs}.
     @rtype:   number
+    
+    @since: 0.7
     @return:  1 in case of success.
     """
     dbId = int(dbId)
@@ -158,6 +169,8 @@ def loadDb(dbId, filename):
     @type  filename: string
     @param filename: Target filesystem full path of the file where data is stored at. B{NOTE}: This data file contains a single database space and should be used for import/export purposes only. Do not try to load it with a call to L{loadAllDbs} and vice versa.
     @rtype:   number
+    
+    @since: 0.7
     @return:  dbId in case of success.
     """    
     dbId = int(dbId)    
@@ -172,6 +185,8 @@ def removeImg(dbId, id):
     @type  id: number
     @param id: Target image id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  1 in case of success.
     """    
     id = int(id)
@@ -185,6 +200,8 @@ def resetDb(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  1 in case of success.
     """    
     dbId = int(dbId)    
@@ -197,6 +214,8 @@ def createDb(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  dbId in case of success
     """    
     dbId = int(dbId)
@@ -207,6 +226,8 @@ def shutdownServer():
     Request a shutdown of this server instance.
 
     @rtype:   number
+    
+    @since: 0.7
     @return:  always M{1}
     """
     global hasShutdown
@@ -230,6 +251,8 @@ def getDbImgCount(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  image count
     """    
     dbId = int(dbId)
@@ -244,6 +267,8 @@ def isImgOnDb(dbId, id):
     @type  id: number
     @param id: Target image id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if image id exists
     """    
     dbId = int(dbId)
@@ -259,6 +284,8 @@ def getImgDimensions(dbId, id):
     @type  id: number
     @param id: Target image id.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array in the form M{[width, height]}
     """    
     dbId = int(dbId)
@@ -276,6 +303,8 @@ def calcImgAvglDiff(dbId, id1, id2):
     @type  id2: number
     @param id2: Target image 2 id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  float representing difference. The smaller, the most similar.
     """    
     dbId = int(dbId)
@@ -294,6 +323,8 @@ def calcImgDiff(dbId, id1,  id2):
     @type  id2: number
     @param id2: Target image 2 id.
     @rtype:   number
+    
+    @since: 0.7
     @return:  float representing difference. The smaller, the most similar.
     """    
     dbId = int(dbId)
@@ -311,6 +342,8 @@ def getImgAvgl(dbId, id):
     @type  id: number
     @param id: Target image id.
     @rtype:   array of double
+    
+    @since: 0.7
     @return:  values for YIQ color channels
     """    
     dbId = int(dbId)
@@ -322,6 +355,8 @@ def getDbList():
     Return list defined database spaces.
 
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of db space ids
     """    
     return imgDB.getDBList()
@@ -333,7 +368,10 @@ def getDbImgIdList(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of image ids
+    @since: 0.7
     """    
     
     dbId = int(dbId)
@@ -344,6 +382,8 @@ def getDbDetailedList():
     Return details for all database spaces.
 
     @rtype:   map
+    
+    @since: 0.7
     @return:  map key is database space id (as an integer), associated value is array with [getImgCount,
                             queryCount,
                             lastQueryPerMin,
@@ -369,6 +409,8 @@ def saveAllDbsAs(path):
     @type  path: string
     @param path: Target filesystem full path of the file where data is stored at.
     @rtype:   number
+    
+    @since: 0.7
     @return:  total db spaces written
     """    
     
@@ -386,6 +428,8 @@ def addKeywordImg(dbId, imgId, hash):
     @type  hash: number
     @param hash: Keyword id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if operation was succesful
     """
     dbId = int(dbId)
@@ -399,6 +443,8 @@ def getIdsBloomFilter(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   bloom filter
+    
+    @since: 0.7
     @return:  bloom filter containing all images on given db id.
     """
     dbId = int(dbId)
@@ -411,6 +457,8 @@ def getClusterKeywords(dbId, numClusters,keywords):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if image id exists
     """    
     dbId = int(dbId)
@@ -423,6 +471,8 @@ def getClusterDb(dbId, numClusters):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if image id exists
     """    
     dbId = int(dbId)
@@ -435,6 +485,8 @@ def getKeywordsPopular(dbId, numres):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if image id exists
     """    
     dbId = int(dbId)
@@ -447,6 +499,8 @@ def getKeywordsVisualDistance(dbId, distanceType,  keywords):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if image id exists
     """    
     dbId = int(dbId)
@@ -463,6 +517,8 @@ def getAllImgsByKeywords(dbId, numres, kwJoinType, keywords):
     @type  keywords: string
     @param keywords: comma separated list of keyword ids. An empty string will return random images.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of image ids
     """    
     dbId = int(dbId)
@@ -487,6 +543,8 @@ def queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @type  keywords: string
     @param keywords: comma separated list of keyword ids.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
     dbId = int(dbId)
@@ -510,6 +568,8 @@ def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @type  keywords: string
     @param keywords: comma separated list of keyword ids. 
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
     dbId = int(dbId)
@@ -532,6 +592,8 @@ def mostPopularKeywords(dbId, imgs, excludedKwds, count, mode):
     @type  mode: number
     @param mode: ignored, will be used on future versions.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of keyword ids and frequencies: [kwd1_id, kwd1_freq, kwd2_id, kwd2_freq, ...]
     """    
     dbId = int(dbId)
@@ -549,6 +611,8 @@ def getKeywordsImg(dbId, imgId):
     @type  imgId: number
     @param imgId: Target image id.
     @rtype:   array
+    
+    @since: 0.7
     @return:  array of keyword ids
     """    
     dbId = int(dbId)
@@ -566,6 +630,8 @@ def removeAllKeywordImg(dbId, imgId):
     @type  imgId: number
     @param imgId: Target image id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if operation succeeded
     """    
     dbId = int(dbId)
@@ -585,6 +651,8 @@ def removeKeywordImg(dbId, imgId, hash):
     @type  hash: number
     @param hash: Keyword id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if operation succeeded
     """    
     dbId = int(dbId)
@@ -602,6 +670,8 @@ def addKeywordsImg(dbId, imgId, hashes):
     @type  hashes: list of number
     @param hashes: Keyword hashes to associate
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if image id exists
     """    
     dbId = int(dbId)
@@ -619,6 +689,8 @@ def addDir(dbId, path, recurse):
     @type  recurse: number
     @param recurse: 1 if should visit recursively
     @rtype:   number
+    
+    @since: 0.7
     @return:  count of images succesfully added
     """    
     
@@ -632,6 +704,8 @@ def loadAllDbsAs(path):
     @type  path: string
     @param path: Target filesystem full path of the file where data is stored at.
     @rtype:   number
+    
+    @since: 0.7
     @return:  total db spaces read
     """    
     
@@ -642,6 +716,8 @@ def saveAllDbs():
     Persist all existing database spaces on the data file defined at the config file I{settings.py}
 
     @rtype:   number
+    
+    @since: 0.7
     @return:  count of persisted db spaces
     """
     
@@ -652,6 +728,8 @@ def loadAllDbs():
     Loads from disk all previously persisted database spaces on the data file defined at the config file I{settings.py}
 
     @rtype:   number
+    
+    @since: 0.7
     @return:  count of persisted db spaces
     """    
     
@@ -662,6 +740,8 @@ def removeDb(dbid):
     Remove a database. All images associated with it are also removed.
 
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  true if succesful
     """    
     
@@ -672,6 +752,8 @@ def getGlobalServerStats():
     Return the most similar images to the supplied one.
 
     @rtype:   map
+    
+    @since: 0.7
     @return:  key is stat name, value is value. Keys are ['isk-daemon uptime', 'Number of databases', 'Total memory usage', 'Resident memory usage', 'Stack memory usage']
     """    
     
@@ -692,6 +774,8 @@ def isValidDb(dbId):
     @type  dbId: number
     @param dbId: Database space id.
     @rtype:   boolean
+    
+    @since: 0.7
     @return:  True if exists
     """    
     

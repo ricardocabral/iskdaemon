@@ -29,7 +29,8 @@ ake-eggs
 .hg
 *.deb
 *.rpm
-.bzr
+*.bzr
+*.db
 epyhtml
 src/imgSeekLib/imgdb.py
 src/imgSeekLib/imgdb_wrap.cpp
