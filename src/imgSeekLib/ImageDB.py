@@ -190,7 +190,7 @@ class ImgDB:
         dbSpace = self.dbSpaces[dbId]
         for fil in os.listdir(path):
             fil = safe_str(fil)
-            fil = path + '/' + fil
+            fil = path + os.sep + fil 
             if len(fil) > 4 and fil[-3:].lower() in SUPPORTED_IMG_EXTS:
                 try:
                     addedCount += self.addImage(dbId, fil, dbSpace.lastId)
@@ -433,7 +433,7 @@ class ImgDB:
             rsc = -100.0*rsc/38.70  # normalize
             #sanity checks
             if rsc<0:rsc = 0
-            if rsc>100:rsc = 100
+            if rsc>100:rsc = 100.0
             res.append([rid,rsc])
             
         res.reverse()

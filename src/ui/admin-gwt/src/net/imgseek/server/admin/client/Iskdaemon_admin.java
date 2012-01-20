@@ -6,10 +6,11 @@ import net.imgseek.server.admin.client.Sink.SinkInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasAlignment;
@@ -18,12 +19,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Iskdaemon_admin implements EntryPoint, HistoryListener {
+public class Iskdaemon_admin implements EntryPoint {
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -64,8 +64,9 @@ public class Iskdaemon_admin implements EntryPoint, HistoryListener {
 	}
 
 	public static void manualRefreshAllSinks() {
-		for (Iterator iter = list.getSinks().iterator(); iter.hasNext();) {
-			SinkInfo element = (SinkInfo) iter.next();
+		for (@SuppressWarnings("unchecked")
+		Iterator<SinkInfo> iter = list.getSinks().iterator(); iter.hasNext();) {
+			SinkInfo element = iter.next();
 			element.getInstance().manualRefreshAll();
 		}
 	}
@@ -124,14 +125,13 @@ public class Iskdaemon_admin implements EntryPoint, HistoryListener {
 		statusPanel.add(statusMessageLabel);
 		statusPanel.setSpacing(8);
 		statusPanel.setWidth("100%");
-		HTML closeLink = new HTML("<font size=small>[close]</font>");
-		closeLink.setStyleName("msg-alert-link");
-		closeLink.addClickListener(new ClickListener() {
-			public void onClick(final Widget sender) {
-				statusPanel.setVisible(false);
-			}
-		});
-		statusPanel.add(closeLink);
+		Button closeBtn = new Button("Dismiss", new ClickHandler() {
+		      public void onClick(ClickEvent event) {
+		    	  statusPanel.setVisible(false);
+		      }
+		    });
+				 
+		statusPanel.add(closeBtn);
 
 		// Put the sink list on the left, and add the outer dock panel to the
 		// root.
@@ -183,8 +183,6 @@ public class Iskdaemon_admin implements EntryPoint, HistoryListener {
 		hpFooter.add(copyRightFooter);
 		RootPanel.get().add(hpFooter);
 
-		History.addHistoryListener(this);
-
 		// Show the initial screen.
 		String initToken = History.getToken();
 		if (initToken.length() > 0) {
@@ -196,8 +194,9 @@ public class Iskdaemon_admin implements EntryPoint, HistoryListener {
 		// Start timer
 		Timer t = new Timer() {
 			public void run() {
-				for (Iterator iter = list.getSinks().iterator(); iter.hasNext();) {
-					SinkInfo element = (SinkInfo) iter.next();
+				for (@SuppressWarnings("unchecked")
+				Iterator<SinkInfo> iter = list.getSinks().iterator(); iter.hasNext();) {
+					SinkInfo element = iter.next();
 					element.getInstance().autoRefreshAll();
 				}
 			}
