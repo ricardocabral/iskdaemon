@@ -83,9 +83,8 @@ class ImageDBTest(unittest.TestCase):
 
     def testsaveandloadalldbs(self):
         import os
-        #dataFile = "c:\\data\\imgdb.all"
-        dataFile = os.path.expanduser("~/isk-db").replace('/','\\')
-        
+        dataFile = 'alternate.image.data'
+
         self.assertEqual(2,self.imgdb.createdb(2))
         self.assertEqual(3,self.imgdb.createdb(3))
         

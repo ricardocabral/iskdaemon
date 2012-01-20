@@ -4,8 +4,6 @@
 bin
 develop-eggs
 isk-db
-imgdb.data
-\\Users\\rnc\\isk-db
 dist
 downloads
 eggs
@@ -28,6 +26,7 @@ ake-eggs
 .mr.developer.cfg
 .hg
 *.deb
+*.data
 *.rpm
 *.bzr
 *.db

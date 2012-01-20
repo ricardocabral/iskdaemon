@@ -146,3 +146,6 @@ setup(name="isk-daemon",
       dependency_links = ["http://sourceforge.net/project/showfiles.php?group_id=26590&package_id=18246",
                          ],
      )
+
+print "See http://www.imgseek.net/isk-daemon/documents-1/usage for some next steps."
+print "See http://www.imgseek.net/isk-daemon/documents-1/faq for some common questions."
