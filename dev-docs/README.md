@@ -57,6 +57,11 @@ Release checklist
     http://www.imgseek.net/isk-daemon/download
     http://www.imgseek.net/news
     http://freecode.com/
+
+Yum based
+---------
+
+    sudo yum install ImageMagick-c++-devel swig gcc-c++ python-setuptools python-devel
  
 OSX Dev environment
 -------------------

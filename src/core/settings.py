@@ -44,12 +44,11 @@ core = ConfigParser.SafeConfigParser({
     })
 
 # read from many possible locations
-if not core.read(['isk-daemon.conf', 
-            os.path.expanduser('~/.isk-daemon.conf'), 
+conffile = core.read(['isk-daemon.conf', 
+            os.path.expanduser('~/isk-daemon.conf'), 
             "/etc/iskdaemon/isk-daemon.conf", 
             #os.path.join(os.environ.get("ISKCONF"),'isk-daemon.conf'),
-            ]):
-    logger.error('no config file (isk-daemon.conf) found. Looked at local dir, home user dir and /etc/iskdaemon. Using defaults for everything.')
+            ])
 
 for sec in ['database', 'daemon','cluster']:
     if not core.has_section(sec): core.add_section(sec)
@@ -83,4 +82,11 @@ def setupLogging():
     logging.getLogger('').addHandler(console)
     
 setupLogging()
+
+
+if len(conffile) < 1:
+    logger.warn('| no config file (isk-daemon.conf) found. Looked at local dir, home user dir and /etc/iskdaemon. Using defaults for everything.')
+else:
+    logger.info('| using config file "%s"' % conffile[0])
+
 
