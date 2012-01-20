@@ -79,6 +79,8 @@ Section "MainSection" SEC01
   ; Install service
   ExecWait '$INSTDIR\isk-daemon.exe install'
 
+  SimpleSC::SetServiceStartType "iskdaemon" "2"
+
   Pop $0 ; returns an errorcode (<>0) otherwise success (0)
   DetailPrint "... service installed."
   DetailPrint "Starting service..."

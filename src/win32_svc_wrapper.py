@@ -1,3 +1,26 @@
+# -*- coding: iso-8859-1 -*-
+###############################################################################
+# begin                : Thu Jan 19 23:30:28 BRST 2012
+# copyright            : (C) 2012 by Ricardo Niederberger Cabral
+# email                : ricardo dot cabral at imgseek dot net
+#
+###############################################################################
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+###############################################################################
+
 import win32service
 import win32serviceutil
 import win32event
@@ -8,7 +31,7 @@ import sys
 class PySvc(win32serviceutil.ServiceFramework):
     _svc_name_ = "iskdaemon"
     _svc_display_name_ = "isk-daemon"
-    _svc_description_ = "visual search image database"
+    _svc_description_ = "Visual search image database"
     
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self,args)
