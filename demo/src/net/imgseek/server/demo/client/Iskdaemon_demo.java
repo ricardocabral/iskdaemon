@@ -65,12 +65,12 @@ public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 		mvp.add(hhp);
 		hhp.add(new HTML("<h1>isk-daemon example</h1>"));
 		hhp.add(new HTML(
-				"<p><a href=http://server.imgseek.net/>isk-daemon</a> is an open source database server capable of adding content-based (visual) image searching to any image related website or software. Click on the '+ similar' link below each image to search by visual similarity. See <a href='http://www.imgseek.net/isk-daemon/demo'>more details</a>.</p>"));
+				"<p><a href=http://server.imgseek.net/>isk-daemon</a> is an open source database server capable of adding content-based (visual) image searching to any image related website or software. Click on the '+ similar' link below each image to search by visual similarity. See <a href='http://www.imgseek.net/isk-daemon/demo'>more details</a> about this demo, including source code.</p>"));
 		hhp.add(new Hyperlink("Random images", "similar-0"));
 
 		mvp.add(resultsGrid);
 		mvp.add(new HTML(
-				"Copyright 2012 <a href=http://www.imgseek.net/>imgSeek project</a>. Sample images are copyrighted by <a href=http://www.vision.caltech.edu/Image_Datasets/Caltech256/>Caltech 256</a>. Includes 30,607 images, covering a large number of categories."));
+				"<br/>Copyright 2012 <a href=http://www.imgseek.net/>imgSeek project</a>. Sample images are copyrighted by <a href=http://www.vision.caltech.edu/Image_Datasets/Caltech256/>Caltech 256</a>. Includes 30,607 images, covering a large number of categories."));
 
 		// If the application starts with no history token, redirect to a new
 		String initToken = History.getToken();

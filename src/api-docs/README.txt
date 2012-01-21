@@ -1,5 +1,5 @@
-An introduction to these API client examples for interacting with isk-daemon instances is available at
+These are example usages of the isk-daemon API on a few programming languages.
 
-http://server.imgseek.net/2007/02/22/introduction-to-api-client-libraries/
+A reference guide on the API methods are at:
 
-For more details please refer to http://server.imgseek.net/
+http://www.imgseek.net/isk-daemon/documents-1/api-reference
