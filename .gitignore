@@ -2,6 +2,7 @@
 *.swp
 .installed.cfg
 bin
+*.gwt
 develop-eggs
 isk-db
 dist
