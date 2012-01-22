@@ -3,6 +3,7 @@
 .installed.cfg
 bin
 *.gwt
+src/ui/admin-gwt/war/Iskdaemon_admin/*
 develop-eggs
 isk-db
 dist
@@ -42,5 +43,5 @@ Setup.exe
 3rd
 classes
 deploy
-iskdaemon_admin
+Iskdaemon_admin
 gwt-unitCache

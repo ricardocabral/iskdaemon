@@ -8,6 +8,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
@@ -23,7 +25,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Iskdaemon_admin implements EntryPoint {
+public class Iskdaemon_admin implements EntryPoint, ValueChangeHandler<String> {
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -38,7 +40,7 @@ public class Iskdaemon_admin implements EntryPoint {
 	protected static SinkList list = new SinkList();
 	private SinkInfo curInfo;
 	private Sink curSink;
-	private final HTML description = new HTML();
+	private final Label description = new Label();
 	private final DockPanel panel = new DockPanel();
 	private DockPanel sinkContainer;
 	private static HorizontalPanel statusPanel = new HorizontalPanel();
@@ -49,9 +51,9 @@ public class Iskdaemon_admin implements EntryPoint {
 	  }-*/;
 
 	public static void error(final Throwable caught) {
-		if (caught.getMessage().equals("Size: 1 Index: 1")) { //TODO what does it mean?
-			return;
-		}
+//		if (caught.getMessage().equals("Size: 1 Index: 1")) { //TODO what does it mean?
+//			return;
+//		}
 
 		String msg = "Unexpected error:\n";
 		msg += caught.getMessage() + "\n";
@@ -97,19 +99,7 @@ public class Iskdaemon_admin implements EntryPoint {
 		list.addSink(ServerInstanceSink.init());
 		list.addSink(ImagesSink.init());
 		// list.addSink(ClusterSink.init());
-		list.addSink(AboutSink.init());
-	}
-
-	public void onHistoryChanged(final String token) {
-		// Find the SinkInfo associated with the history context. If one is
-		// found, show it (It may not be found, for example, when the user mis-
-		// types a URL, or on startup, when the first context will be "").
-		SinkInfo info = list.find(token);
-		if (info == null) {
-			showInfo();
-			return;
-		}
-		show(info, false);
+		list.addSink(HelpSink.init());
 	}
 
 	public void onModuleLoad() {
@@ -118,7 +108,7 @@ public class Iskdaemon_admin implements EntryPoint {
 
 		// Load all the sinks.
 		loadSinks();
-
+	
 		// Status panel
 		statusPanel.setVisible(false);
 		statusPanel.setStyleName("msg-alert");
@@ -183,14 +173,6 @@ public class Iskdaemon_admin implements EntryPoint {
 		hpFooter.add(copyRightFooter);
 		RootPanel.get().add(hpFooter);
 
-		// Show the initial screen.
-		String initToken = History.getToken();
-		if (initToken.length() > 0) {
-			onHistoryChanged(initToken);
-		} else {
-			showInfo();
-		}
-
 		// Start timer
 		Timer t = new Timer() {
 			public void run() {
@@ -204,6 +186,16 @@ public class Iskdaemon_admin implements EntryPoint {
 		// Schedule the timer to run once in 5 seconds.
 		t.scheduleRepeating(5000);
 
+		// If the application starts with no history token, redirect to a new
+		String initToken = History.getToken();
+		if (initToken.length() == 0) {
+			History.newItem("Status");
+		}
+		// Add history listener
+		History.addValueChangeHandler(this);
+		// Now that we've setup our listener, fire the initial history state.
+		History.fireCurrentHistoryState();
+		
 		// TODO: check if iskdaemon instance is passwd protect then prompt for
 		// login: http://code.google.com/p/gwt-stuff/
 	}
@@ -228,7 +220,7 @@ public class Iskdaemon_admin implements EntryPoint {
 		// sink list.
 		curSink = info.getInstance();
 		list.setSinkSelection(info.getName());
-		description.setHTML(info.getDescription());
+		description.setText(info.getDescription());
 
 		// If affectHistory is set, create a new item on the history stack. This
 		// will ultimately result in onHistoryChanged() being called. It will
@@ -250,5 +242,20 @@ public class Iskdaemon_admin implements EntryPoint {
 
 	private void showInfo() {
 		show(list.find("Status"), false);
+	}
+
+	@Override
+	public void onValueChange(ValueChangeEvent<String> event) {
+		// Find the SinkInfo associated with the history context. If one is
+		// found, show it (It may not be found, for example, when the user mis-
+		// types a URL, or on startup, when the first context will be "").
+		String token = event.getValue();
+		SinkInfo info = list.find(token);
+		if (info == null) {
+			showInfo();
+			return;
+		}
+		show(info, false);
+		
 	}
 }

@@ -53,6 +53,7 @@ Release checklist
     git push --tags        
 
     https://github.com/ricardocabral/iskdaemon/downloads
+    git log --pretty=format:%s v0.9.2..
     http://www.imgseek.net/isk-daemon/changelog
     http://www.imgseek.net/isk-daemon/download
     http://www.imgseek.net/news

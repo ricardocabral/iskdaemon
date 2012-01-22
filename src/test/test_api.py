@@ -210,6 +210,8 @@ def testAddImage():
 
     #assertEqual(1,server.addImg(1,test_images_dir+"DSC00006.JPG",6,))
 
+import unittest
+
 class APITest(unittest.TestCase):
     
     def setUp(self):
@@ -219,7 +221,9 @@ class APITest(unittest.TestCase):
         pass
 
     def testGetLog(self):
-        assert len(self.server.getIskLog(2))> 10
+        logs = self.server.getIskLog(2)
+        print logs
+        assert len(logs)> 10
 
 if __name__ == '__main__':
     testAddImage()

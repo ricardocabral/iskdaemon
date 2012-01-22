@@ -21,7 +21,7 @@ public class ServerInstanceSink extends Sink {
 
 	public static SinkInfo init() {
 		return new SinkInfo("Server",
-				"Manage this <i>isk-daemon</i> server instance.") {
+				"Manage this isk-daemon server instance.") {
 			public Sink createInstance() {
 				return new ServerInstanceSink();
 			}

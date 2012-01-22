@@ -203,7 +203,7 @@ a:visited {
 .ks-Info {
   background-color: #C3D9FF;
   padding: 10px 10px 2px 10px;
-  font-size: smaller;
+  font-size: 16px;
 }
 
 .ks-Info-normal-font {
@@ -265,4 +265,20 @@ a:visited {
 
 .infoProse {
   margin: 8px;
+}
+
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}
+
+.fixedFont {
+  font-family:     "Courier New",
+                    Courier,
+                    monospace;
 }

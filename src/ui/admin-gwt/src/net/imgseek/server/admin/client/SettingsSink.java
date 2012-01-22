@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.HTML;
 public class SettingsSink extends Sink {
 
   public static SinkInfo init() {
-    return new SinkInfo("Settings", "Adjust global settings for this <i>isk-daemon</i> instance") {
+    return new SinkInfo("Settings", "Adjust global settings for this isk-daemon instance") {
       public Sink createInstance() {
         return new SettingsSink();
       }

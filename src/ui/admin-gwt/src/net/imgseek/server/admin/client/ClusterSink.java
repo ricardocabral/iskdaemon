@@ -19,7 +19,7 @@ public class ClusterSink extends Sink {
 
 	public static SinkInfo init() {
 		return new SinkInfo("Cluster",
-				"Manage <i>isk-daemon</i> instances on this cluster.") {
+				"Manage isk-daemon instances on this cluster.") {
 			public Sink createInstance() {
 				return new ClusterSink();
 			}

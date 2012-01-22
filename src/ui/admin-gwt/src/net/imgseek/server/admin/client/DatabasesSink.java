@@ -30,7 +30,7 @@ public class DatabasesSink extends Sink {
 
 	public static SinkInfo init() {
 		return new SinkInfo("Databases",
-				"Manage database spaces inside this <i>isk-daemon</i> instance") {
+				"Manage database spaces inside this isk-daemon instance") {
 			public Sink createInstance() {
 				return new DatabasesSink();
 			}
