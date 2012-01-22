@@ -279,10 +279,12 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 
 }
 
-int addImageBlob(const int dbId, const long int id, const void *blob, const long length) {
-	ExceptionInfo exception;
-	ImageInfo *image_info;
+int addImageBlob(const int dbId, const long int id, const char *blob, const long length) {
 
+	ExceptionInfo exception;
+	GetExceptionInfo(&exception);
+
+	ImageInfo *image_info;
 	image_info = CloneImageInfo((ImageInfo *) NULL);
 
 	Image *image = BlobToImage(image_info, blob, length, &exception);
@@ -660,7 +662,7 @@ int savealldbs(char* filename) {
 	return res;
 }
 
-std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch, bloom_filter* bfilter) {
+std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch, bloom_filter* bfilter, bool colorOnly) {
 	int idx, c;
 	int pn;
 	Idx *sig[3] = { sig1, sig2, sig3 };
@@ -687,33 +689,34 @@ std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2,
 			}
 		}
 	}
-
-	for (int b = 0; b < NUM_COEFS; b++) {	// for every coef on a sig
-		for (c = 0; c < 3; c++) {
-			//TODO see if FAST_POW_GEERT gives the same results
+    if (!colorOnly) {
+        for (int b = 0; b < NUM_COEFS; b++) {	// for every coef on a sig
+            for (c = 0; c < 3; c++) {
+                //TODO see if FAST_POW_GEERT gives the same results
 #ifdef FAST_POW_GEERT
-			pn  = sig[c][b] < 0;
-			idx = (sig[c][b] - pn) ^ -pn;
+                pn  = sig[c][b] < 0;
+                idx = (sig[c][b] - pn) ^ -pn;
 #else
-			pn = 0;
-			if (sig[c][b]>0) {
-				pn = 0;
-				idx = sig[c][b];
-			} else {
-				pn = 1;
-				idx = -sig[c][b];
-			}
+                pn = 0;
+                if (sig[c][b]>0) {
+                    pn = 0;
+                    idx = sig[c][b];
+                } else {
+                    pn = 1;
+                    idx = -sig[c][b];
+                }
 #endif
 
-			// update the score of every image which has this coef
-			long_listIterator end = dbSpace[dbId]->imgbuckets[c][pn][idx].end();
-			for (long_listIterator uit = dbSpace[dbId]->imgbuckets[c][pn][idx].begin();
-			uit != end; uit++) {
-				//TODO in each iteration search in tree (std::map) is performed. i think the better way to link by pointers.
-				dbSpace[dbId]->sigs[(*uit)]->score -= weights[sketch][imgBin[idx]][c];
-			}
-		}
-	}
+                // update the score of every image which has this coef
+                long_listIterator end = dbSpace[dbId]->imgbuckets[c][pn][idx].end();
+                for (long_listIterator uit = dbSpace[dbId]->imgbuckets[c][pn][idx].begin();
+                uit != end; uit++) {
+                    //TODO in each iteration search in tree (std::map) is performed. i think the better way to link by pointers.
+                    dbSpace[dbId]->sigs[(*uit)]->score -= weights[sketch][imgBin[idx]][c];
+                }
+            }
+        }
+    }
 
 	sigPriorityQueue pqResults;		/* results priority queue; largest at top */
 
@@ -753,7 +756,6 @@ std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2,
 	}
 
 	return V;
-
 }
 
 
@@ -762,63 +764,8 @@ avgl is the average luminance
 numres is the max number of results
 sketch (0 or 1) tells which set of weights to use
  */
-std::vector<double> queryImgData(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch) {
-	return queryImgDataFiltered(dbId, sig1, sig2, sig3, avgl, numres, sketch, 0);
-
-}
-
-/* Will only look at avg lum
- * sig1,2,3 are int arrays of length NUM_COEFS
-avgl is the average luminance
-numres is the max number of results
-sketch (0 or 1) tells which set of weights to use
- */
-std::vector<double> queryImgDataFast(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch) {
-	int c;
-
-	vector<double> V;
-
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return V;}
-
-	for (sigIterator sit = dbSpace[dbId]->sigs.begin(); sit != dbSpace[dbId]->sigs.end(); sit++) {
-		(*sit).second->score = 0;
-		for (c = 0; c < 3; c++) {
-			(*sit).second->score += weights[sketch][0][c]
-			                                           * fabs((*sit).second->avgl[c] - avgl[c]);
-		}
-	}
-
-	sigPriorityQueue pqResults;		/* results priority queue; largest at top */
-	sigIterator sit = dbSpace[dbId]->sigs.begin();
-
-
-	// Fill up the numres-bounded priority queue (largest at top):
-	for (int cnt = 0; cnt < numres; cnt++) {
-		if (sit == dbSpace[dbId]->sigs.end())
-			// No more images; cannot get requested numres, alas.
-			return V;
-		pqResults.push(*(*sit).second);
-		sit++;
-	}
-
-	for (; sit != dbSpace[dbId]->sigs.end(); sit++) {
-		if ((*sit).second->score < pqResults.top().score) {
-			// Make room by dropping largest entry:
-			pqResults.pop();
-			// Insert new entry:
-			pqResults.push(*(*sit).second);
-		}
-	}
-
-	SigStruct curResTmp;            /* current result waiting to be returned */
-	while (pqResults.size()) {
-		curResTmp = pqResults.top();
-		pqResults.pop();
-		V.insert(V.end(), curResTmp.id);
-		V.insert(V.end(), curResTmp.score);
-	}
-
-	return V;
+std::vector<double> queryImgData(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch, bool colorOnly) {
+	return queryImgDataFiltered(dbId, sig1, sig2, sig3, avgl, numres, sketch, 0, colorOnly);
 
 }
 
@@ -899,49 +846,150 @@ long_list queryImgDataForThresFast(sigMap * tsigs, double *avgl, float thresd, i
 	return res;
 }
 
-// cluster by similarity. Returns list of list of long ints (img ids)
-/*
-long_list_2 clusterSim(const int dbId, float thresd, int fast = 0) {
-	long_list_2 res;		// will hold a list of lists. ie. a list of clusters
-	sigMap wSigs(dbSpace[dbId]->sigs);		// temporary map of sigs, as soon as an image becomes part of a cluster, it's removed from this map
-	sigMap wSigsTrack(dbSpace[dbId]->sigs);	// temporary map of sigs, as soon as an image becomes part of a cluster, it's removed from this map
+//TODO some places are using double_vector others std::vector. Decide!
+std::vector<double>  queryImgBlob(const int dbId, const char* data,const long length, int numres,int sketch, bool colorOnly) {
+	ExceptionInfo exception;
+	GetExceptionInfo(&exception);
 
-	for (sigIterator sit = wSigs.begin(); sit != wSigs.end(); sit++) {	// for every img on db
-		long_list res2;
+	ImageInfo *image_info;
+	image_info = CloneImageInfo((ImageInfo *) NULL);
 
-		if (fast) {
-			res2 =
-				queryImgDataForThresFast(&wSigs, (*sit).second->avgl,
-				thresd, 1);
-		} else {
-			res2 =
-				queryImgDataForThres(dbId, &wSigs, (*sit).second->sig1,
-				(*sit).second->sig2,
-				(*sit).second->sig3,
-				(*sit).second->avgl, thresd, 1);
-		}
-		//    continue;
-		long int hid = (*sit).second->id;
-		//    if ()
-		wSigs.erase(hid);
-		if (res2.size() <= 1) {
-			if (wSigs.size() <= 1)
-				break;		// everything already added to a cluster sim. Bail out immediately, otherwise next iteration
-			// will segfault when incrementing sit
-			continue;
-		}
-		res2.push_front(hid);
-		res.push_back(res2);
-		if (wSigs.size() <= 1)
-			break;
-		// sigIterator sit2 = wSigs.end();
-		//    sigIterator sit3 = sit++;
+	Image *image = BlobToImage(image_info, data, length, &exception);
+	if (exception.severity != UndefinedException) CatchException(&exception);
+
+	DestroyImageInfo(image_info);
+
+	// Made static for speed; only used locally
+	static Unit cdata1[16384];
+	static Unit cdata2[16384];
+	static Unit cdata3[16384];
+	int i;
+
+	Image *resize_image;
+
+	/*
+	Initialize the image info structure and read an image.
+	 */
+	GetExceptionInfo(&exception);
+
+	resize_image = SampleImage(image, 128, 128, &exception);
+
+	DestroyImage(image);
+
+	DestroyExceptionInfo(&exception);
+
+	if (resize_image == (Image *) NULL) {
+		cerr << "ERROR: unable to resize image" << endl;
+    	return vector<double>();
 	}
-	return res;
+
+    // store color value for basic channels
+	unsigned char rchan[16384];
+	unsigned char gchan[16384];
+	unsigned char bchan[16384];
+
+	GetExceptionInfo(&exception);
+
+	const PixelPacket *pixel_cache = AcquireImagePixels(resize_image, 0, 0, 128, 128, &exception);
+
+	for (int idx = 0; idx < 16384; idx++) {
+		rchan[idx] = pixel_cache->red;
+		gchan[idx] = pixel_cache->green;
+		bchan[idx] = pixel_cache->blue;
+		pixel_cache++;
+	}
+
+    DestroyImage(resize_image);
+
+	transformChar(rchan, gchan, bchan, cdata1, cdata2, cdata3);
+
+	DestroyExceptionInfo(&exception);
+
+	SigStruct *nsig = new SigStruct();
+    //TODO leaking nsig?
+	calcHaar(cdata1, cdata2, cdata3,
+			nsig->sig1, nsig->sig2, nsig->sig3, nsig->avgl);
+
+	return queryImgData(dbId, nsig->sig1, nsig->sig2, nsig->sig3,
+			nsig->avgl, numres, sketch, colorOnly);
 }
- */
+
+std::vector<double> queryImgPath(const int dbId, char* path,int numres,int sketch, bool colorOnly) {
+
+	ExceptionInfo exception;
+	GetExceptionInfo(&exception);
+
+	ImageInfo *image_info;
+	image_info = CloneImageInfo((ImageInfo *) NULL);
+	(void) strcpy(image_info->filename, path);
+	Image *image = ReadImage(image_info, &exception);
+	if (exception.severity != UndefinedException) CatchException(&exception);
+	DestroyImageInfo(image_info);
+	DestroyExceptionInfo(&exception);
+
+	if (image == (Image *) NULL) {
+    	cerr << "ERROR: unable to read image" << endl;
+    	return vector<double>();
+    }
+
+	// Made static for speed; only used locally
+	static Unit cdata1[16384];
+	static Unit cdata2[16384];
+	static Unit cdata3[16384];
+	int i;
+
+	Image *resize_image;
+
+	/*
+	Initialize the image info structure and read an image.
+	 */
+	GetExceptionInfo(&exception);
+
+	resize_image = SampleImage(image, 128, 128, &exception);
+
+	DestroyImage(image);
+
+	DestroyExceptionInfo(&exception);
+
+	if (resize_image == (Image *) NULL) {
+		cerr << "ERROR: unable to resize image" << endl;
+    	return vector<double>();
+	}
+
+    // store color value for basic channels
+	unsigned char rchan[16384];
+	unsigned char gchan[16384];
+	unsigned char bchan[16384];
+
+	GetExceptionInfo(&exception);
+
+	const PixelPacket *pixel_cache = AcquireImagePixels(resize_image, 0, 0, 128, 128, &exception);
+
+	for (int idx = 0; idx < 16384; idx++) {
+		rchan[idx] = pixel_cache->red;
+		gchan[idx] = pixel_cache->green;
+		bchan[idx] = pixel_cache->blue;
+		pixel_cache++;
+	}
+
+    DestroyImage(resize_image);
+
+	transformChar(rchan, gchan, bchan, cdata1, cdata2, cdata3);
+
+	DestroyExceptionInfo(&exception);
+
+	SigStruct *nsig = new SigStruct();
+
+	calcHaar(cdata1, cdata2, cdata3,
+			nsig->sig1, nsig->sig2, nsig->sig3, nsig->avgl);
+
+	return queryImgData(dbId, nsig->sig1, nsig->sig2, nsig->sig3,
+			nsig->avgl, numres, sketch, colorOnly);
+}
+
+
 //TODO add parm for query tweaking (sketch?)
-std::vector<double> queryImgID(const int dbId, long int id, int numres) {
+std::vector<double> queryImgID(const int dbId, long int id, int numres, int sketch, bool colorOnly) {
 	/*query for images similar to the one that has this id
 	numres is the maximum number of results
 	 */
@@ -975,27 +1023,17 @@ std::vector<double> queryImgID(const int dbId, long int id, int numres) {
 	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return std::vector<double>();};
 
 	return queryImgData(dbId, dbSpace[dbId]->sigs[id]->sig1, dbSpace[dbId]->sigs[id]->sig2, dbSpace[dbId]->sigs[id]->sig3,
-			dbSpace[dbId]->sigs[id]->avgl, numres, 0);
+			dbSpace[dbId]->sigs[id]->avgl, numres, sketch, colorOnly);
 }
 
-std::vector<double> queryImgIDFiltered(const int dbId, long int id, int numres, bloom_filter* bf) {
+std::vector<double> queryImgIDFiltered(const int dbId, long int id, int numres, bloom_filter* bf, bool colorOnly) {
 	/*query for images similar to the one that has this id
 	numres is the maximum number of results
 	 */
 
 	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return std::vector<double>();};
 	return queryImgDataFiltered(dbId, dbSpace[dbId]->sigs[id]->sig1, dbSpace[dbId]->sigs[id]->sig2, dbSpace[dbId]->sigs[id]->sig3,
-			dbSpace[dbId]->sigs[id]->avgl, numres, 0, bf);
-}
-
-std::vector<double> queryImgIDFast(const int dbId, long int id, int numres) {
-	/*query for images similar to the one that has this id
-	numres is the maximum number of results
-	 */
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return std::vector<double>();};
-
-	return queryImgDataFast(dbId, dbSpace[dbId]->sigs[id]->sig1, dbSpace[dbId]->sigs[id]->sig2, dbSpace[dbId]->sigs[id]->sig3,
-			dbSpace[dbId]->sigs[id]->avgl, numres, 0);
+			dbSpace[dbId]->sigs[id]->avgl, numres, 0, bf, colorOnly);
 }
 
 int removeID(const int dbId, long int id) {
@@ -1242,7 +1280,7 @@ std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs,
 }
 
 // query by keywords
-std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords){
+std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords, bool colorOnly){
 	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return std::vector<double>();}
 
 	if ((id != 0) && !validate_imgid(dbId, id)) { // not search random and image doesnt exist
@@ -1298,19 +1336,10 @@ std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, 
 
 		return Vres;
 	}
-	return queryImgIDFiltered(dbId, id, numres, bf);
+	return queryImgIDFiltered(dbId, id, numres, bf, colorOnly);
 
 }
-std::vector<double> queryImgIDFastKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords){
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return std::vector<double>();};
 
-	throw string("not yet implemented");
-}
-std::vector<double> queryImgDataFastKeywords(const int dbId, int * sig1, int * sig2, int * sig3, double *avgl, int numres, int sketch, int kwJoinType, std::vector<int> keywords){
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return std::vector<double>();}
-
-	throw string("not yet implemented");
-}
 std::vector<long int> getAllImgsByKeywords(const int dbId, const int numres, int kwJoinType, std::vector<int> keywords){
 	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return std::vector<long int>();}
 

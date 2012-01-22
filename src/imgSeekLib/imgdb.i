@@ -6,6 +6,7 @@
 #include "bloom_filter.h"
 #include "imgdb.h"
 %}
+%include "pybuffer.i"
 
 namespace std {
    %template(IntVector) vector<int>;
@@ -14,13 +15,15 @@ namespace std {
 }
 
 // query
-std::vector<double> queryImgID(const int dbId, long int id, int numres);
-std::vector<double> queryImgIDFast(const int dbId, long int id, int numres);
-std::vector<double> queryImgData(const int dbId, int * sig1, int * sig2, int * sig3, double *avgl, int numres, int sketch);
-
+%pybuffer_binary(const char *data, const long length);
+std::vector<double> queryImgData(const int dbId, int * sig1, int * sig2, int * sig3, double *avgl, int numres, int sketch, bool colorOnly);
+std::vector<double> queryImgID(const int dbId, long int id,int numres,int sketch, bool colorOnly);
+std::vector<double> queryImgBlob(const int dbId, const char* data,const long length, int numres,int sketch, bool colorOnly);
+std::vector<double> queryImgPath(const int dbId, char* path,int numres,int sketch, bool colorOnly);
+long_list queryImgDataForThresFast(sigMap * tsigs, double *avgl, float thresd, int sketch); 
 // add
 int addImage(const int dbId, const long int id, char* filename);  //TODO should be long long int?
-int addImageBlob(const int dbId, const long int id, const void *blob, const long length);
+int addImageBlob(const int dbId, const long int id, const char *data, const long length);
 
 // db ops
 int savedb(const int dbId, char* filename);
@@ -54,8 +57,7 @@ bool removeAllKeywordImg(const int dbId, const int id);
 std::vector<int> getKeywordsImg(const int dbId, const int id);
 
 // query by keywords
-std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
-std::vector<double> queryImgIDFastKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
+std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords, bool colorOnly);
 std::vector<long int> getAllImgsByKeywords(const int dbId, const int numres, int kwJoinType, std::vector<int> keywords);
 double getKeywordsVisualDistance(const int dbId, int distanceType, std::vector<int> keywords);
 // std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs, std::vector<int> excludedKwds, int count, int mode);

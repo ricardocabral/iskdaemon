@@ -60,17 +60,23 @@ class ImageDBTest(unittest.TestCase):
         self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00006.JPG",6,))
         self.assertEqual(1,self.imgdb.addImage(1,test_images_dir+"DSC00007.JPG",7))
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00008.JPG",8))
-        self.assertEqual(3,self.imgdb.getImgCount(1))
+        # add by blob
+        fname = test_images_dir+"DSC00008.JPG"
+
+        f = open(fname,'rb')
+        data = f.read()
+        f.close()
+
+        self.assertEqual(1,self.imgdb.addImageBlob(1, data,9))
+
+        assert self.imgdb.calcAvglDiff(1,8,9) == 0
+        self.assertEqual(4,self.imgdb.getImgCount(1))
         
         self.assertEqual(1,self.imgdb.isImageOnDB(1,6))
         self.assertEqual(1,self.imgdb.isImageOnDB(1,7))
         self.assertEqual(1,self.imgdb.isImageOnDB(1,8))
+        self.assertEqual(1,self.imgdb.isImageOnDB(1,9))
         self.assertEqual(0,self.imgdb.isImageOnDB(1,81))
-    
-    """
-        self.assertEqual(self.seq, range(10))
-        self.assert_(element in self.seq)
-    """
     
     def testsaveloaddb(self):
         self.assertEqual(1,self.imgdb.addImage(1, test_images_dir+"DSC00006.JPG",6))
@@ -250,15 +256,41 @@ class ImageDBTest(unittest.TestCase):
         
         dv = self.imgdb.queryImgID(1,6, 4)
         self.assertEqual(5, len(dv))
-        
+       
+        # are image clones really scoring as very similar?
         dv = self.imgdb.queryImgID(1,6, 3)
         self.assertEqual(4, len(dv))
         self.assertEqual(8, dv[0][0]) 
         self.assertEqual(6, dv[1][0])
         self.assertEqual(19, dv[2][0]) 
-                
-        dv = self.imgdb.queryImgID(2,19, 4)
+
+        # query by path
+        dv = self.imgdb.queryImgPath(1,test_images_dir+"DSC00007.JPG", 3)
+        self.assertEqual(4, len(dv))
+        self.assertEqual(7, dv[0][0]) 
+            # fast
+        dv = self.imgdb.queryImgPath(1,test_images_dir+"DSC00007.JPG", 3,0,True)
+        self.assertEqual(4, len(dv))
+        self.assertEqual(7, dv[0][0]) 
+            # sketch
+        dv = self.imgdb.queryImgPath(1,test_images_dir+"DSC00007.JPG", 3,1)
+        self.assertEqual(4, len(dv))
+        self.assertEqual(7, dv[0][0]) 
+
+        # query non existing
+        dv = self.imgdb.queryImgID(2,1139, 4)
         self.assertEqual(0, len(dv))
+
+        # query by blob
+        fname = test_images_dir+"DSC00007.JPG"
+
+        f = open(fname,'rb')
+        data = f.read()
+        f.close()
+
+        dv = self.imgdb.queryImgBlob(1,data, 3)
+        self.assertEqual(4, len(dv))
+        self.assertEqual(7, dv[0][0]) 
        
         # test Fast search
         dv = self.imgdb.queryImgID(3,21, 4, True)
@@ -326,13 +358,13 @@ class ImageDBTest(unittest.TestCase):
         #std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords){
         #dv [[8L, 100], [6L, 100], [19L, 15.272009339950403], [22L, 14.274818233138154], [7L, 14.086848507770208]]
 
-        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [2,3]) # AND
+        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 1, [2,3],False) # AND
         ids = [r[0] for r in dv]
         print ids
         self.assert_(7 in ids)
         self.assertEqual(1,len(dv))
 
-        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 0, [2,3]) # OR
+        dv = self.imgdb.queryImgIDKeywords(1,6, 4, 0, [2,3],True) # OR
         ids = [r[0] for r in dv]
         print ids
         self.assert_(7 in ids)

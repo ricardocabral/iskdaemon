@@ -267,9 +267,12 @@ typedef std::map<const int, dbSpaceStruct*>::iterator  dpspaceIterator;
 //void saveGlobalSerializationMetadata(std::ofstream& f);
 
 // Main exported functions
-double_vector queryImgID(const int dbId, long int id,int numres);
-double_vector queryImgIDFast(const int dbId, long int id, int numres);
-double_vector queryImgData(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch);
+double_vector queryImgID(const int dbId, long int id,int numres,int sketch, bool colorOnly);
+double_vector queryImgBlob(const int dbId, const char* data,const long length, int numres,int sketch, bool colorOnly);
+double_vector queryImgPath(const int dbId, char* path,int numres,int sketch, bool colorOnly);
+double_vector queryImgData(const int dbId, Idx * sig1, Idx * sig2, Idx * sig3, double *avgl, int numres, int sketch, bool colorOnly);
+long_list queryImgDataForThresFast(sigMap * tsigs, double *avgl, float thresd, int sketch); 
+
 int addImage(const int dbId, const long int id, char* filename);
 int savedb(const int dbId, char* filename);
 int loaddb(const int dbId, char* filename);
@@ -286,7 +289,7 @@ int getImageWidth(const int dbId, long int id);
 double calcAvglDiff(const int dbId, long int id1, long int id2);
 double calcDiff(const int dbId, long int id1, long int id2);
 double_vector getImageAvgl(const int dbId, long int id1);
-int addImageBlob(const int dbId, const long int id, const void *blob, const long length);
+int addImageBlob(const int dbId, const long int id, const char *blob, const long length);
 std::vector<int> getDBList();
 std::vector<long int> getImgIdList(const int dbId);
 bool isValidDB(const int dbId);
@@ -301,9 +304,7 @@ bool removeAllKeywordImg(const int dbId, const int id);
 std::vector<int> getKeywordsImg(const int dbId, const int id);
 
 // query by keywords
-std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
-std::vector<double> queryImgIDFastKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords);
-std::vector<double> queryImgDataFastKeywords(const int dbId, int * sig1, int * sig2, int * sig3, double *avgl, int numres, int sketch, int kwJoinType, std::vector<int> keywords);
+std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, std::vector<int> keywords, bool colorOnly);
 std::vector<long int> getAllImgsByKeywords(const int dbId, const int numres, int kwJoinType, std::vector<int> keywords);
 double getKeywordsVisualDistance(const int dbId, int distanceType, std::vector<int> keywords);
 std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs, std::vector<int> excludedKwds, int count, int mode);

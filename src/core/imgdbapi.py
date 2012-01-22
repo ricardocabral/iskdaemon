@@ -55,7 +55,7 @@ rootLog.info('| image database initialized')
 
 ############ Common functions for all comm backends
 #@memoize.simple_memoized
-def queryImgID(dbId, id, numres=12, fast=False):
+def queryImgID(dbId, id, numres=12, sketch=0, fast=False):
     """
     Return the most similar images to the supplied one. The supplied image must be already indexed, and is referenced by its ID.
 
@@ -65,8 +65,12 @@ def queryImgID(dbId, id, numres=12, fast=False):
     @param id: Target image id.
     @type  numres: number
     @param numres: Number of results to return. The target image is on the result list.
+    @type  sketch: number
+    @param sketch: 0 for photographs, 1 for hand-sketched images or low-resolution vector images. 
+    @type fast: boolean
+    @param fast: if true, only the average color for each image is considered. Image geometry/features are ignored. Search is faster this way.
+
     @rtype:   array
-    
     @since: 0.7
     @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
     """    
@@ -88,9 +92,9 @@ def queryImgID(dbId, id, numres=12, fast=False):
                     rootLog.error(e)
                     break
     # no remote peer has this image, try locally
-    return imgDB.queryImgID(dbId, id, numres)
+    return imgDB.queryImgID(dbId, id, numres,sketch,fast)
 
-def queryImgData(dbId, data, numres=12, fast=False):
+def queryImgBlob(dbId, data, numres=12, sketch=0, fast=False):
     """
     Return the most similar images to the supplied one. The target image is specified by its raw binary file data. Most common formats are supported.
 
@@ -100,6 +104,10 @@ def queryImgData(dbId, data, numres=12, fast=False):
     @param data: Target image file binary data.
     @type  numres: number
     @param numres: Number of results to return. The target image is on the result list.
+    @type  sketch: number
+    @param sketch: 0 for photographs, 1 for hand-sketched images or low-resolution vector images. 
+    @type fast: boolean
+    @param fast: if true, only the average color for each image is considered. Image geometry/features are ignored. Search is faster this way.
     @rtype:   array
     
     @since: 0.9.3
@@ -108,9 +116,9 @@ def queryImgData(dbId, data, numres=12, fast=False):
     dbId = int(dbId)
     numres = int(numres)
     
-    return imgDB.queryImgData(dbId, data, numres)
+    return imgDB.queryImgBlob(dbId, data, numres,sketch,fast)
 
-def queryImgPath(dbId, path, numres=12, fast=False):
+def queryImgPath(dbId, path, numres=12, sketch=0, fast=False):
     """
     Return the most similar images to the supplied one. The target image is specified using it's full path on the server disk.
 
@@ -120,6 +128,10 @@ def queryImgPath(dbId, path, numres=12, fast=False):
     @param path: Target image pth on the server disk.
     @type  numres: number
     @param numres: Number of results to return. The target image is on the result list.
+    @type  sketch: number
+    @param sketch: 0 for photographs, 1 for hand-sketched images or low-resolution vector images. 
+    @type fast: boolean
+    @param fast: if true, only the average color for each image is considered. Image geometry/features are ignored. Search is faster this way.
     @rtype:   array
     
     @since: 0.9.3
@@ -128,7 +140,46 @@ def queryImgPath(dbId, path, numres=12, fast=False):
     dbId = int(dbId)
     numres = int(numres)
     
-    return imgDB.queryImgPath(dbId, path, numres)
+    return imgDB.queryImgPath(dbId, path, numres,sketch,fast)
+
+def addImgBlob(dbId, id, data, length):
+    """
+    Add image to database space. Image data is passed directly. It is then processed and indexed. 
+
+    @type  dbId: number
+    @param dbId: Database space id.
+    @type  id: number
+    @param id: Target image id. The image located on filename will be indexed and from now on should be refered to isk-daemon as this supplied id.
+    @type  data: binary 
+    @param data: Image binary data
+    @type  length: long 
+    @param length: file size (length of data parm) 
+    @rtype:   number
+    
+    @since: 0.9.3
+    @return:  1 in case of success.
+    """
+    dbId = int(dbId)
+    id = int(id)
+
+    if fileIsUrl: # download it first
+        tempFName = os.path.expanduser(settings.core.get('database','databasePath')) + ('_tmp_%d_%d.jpg' % (dbId,id))
+        urlToFile(filename,tempFName)
+        filename = tempFName
+    res = 0
+    try:
+        #TODO id should be unsigned long int or something even bigger, also must review swig declarations
+        res = imgDB.addImage(dbId, filename, id)
+    except Exception, e:
+        if str(e) == 'image already in db':
+            rootLog.warn(e)        
+        else:
+            rootLog.error(e)
+        return res
+    
+    if (fileIsUrl): os.remove(filename)    
+    
+    return res
 
 def addImg(dbId, id, filename, fileIsUrl=False):
     """
@@ -879,6 +930,9 @@ CommonDatabaseFacadeFunctions = [
                                  getIdsBloomFilter,     
                                  mostPopularKeywords,                                                             
                                  getIskLog,
+                                 queryImgBlob,
+                                 queryImgPath,
+                                 addImgBlob,
                                     ]
 
 

@@ -51,6 +51,15 @@ def safe_str(obj):
         # obj is unicode
         return unicode(obj).encode('unicode_escape')
 
+def addCount(dbSpace):
+    # add per minutes counting
+    dbSpace.addCount += 1
+    if time.localtime()[4] > dbSpace.addMinCur:
+        dbSpace.addMinCur = time.localtime()[4]
+        dbSpace.lastAddPerMin = dbSpace.addMinCount
+    else:
+        dbSpace.addMinCount += 1
+
 def countQuery(dbSpace):
     dbSpace.queryCount += 1
     if time.localtime()[4] > dbSpace.queryMinCur:
@@ -236,6 +245,28 @@ class ImgDB:
         return False
 
     @utils.requireKnownDbId
+    def addImageBlob(self, dbId, data, newid = None):
+        dbSpace = self.dbSpaces[dbId]
+        
+        if not newid:
+            newid = dbSpace.lastId
+            
+        newid = long(newid)
+        addCount(dbSpace)
+        # call imgdb
+        res = imgdb.addImageBlob(dbId, newid, data)
+
+        if res != 0: # add successful
+            dbSpace.lastId = newid + 1
+            # time to save automatically ?            
+            #TODO this should be a reactor timer
+            if self._settings.core.getboolean('database','automaticSave') and \
+               time.time() - dbSpace.lastSaveTime > self._settings.core.getint('database','saveInterval'):
+                dbSpace.lastSaveTime = time.time()
+                self.savealldbs()
+        return res
+
+    @utils.requireKnownDbId
     def addImage(self, dbId, fname,newid = None):
         dbSpace = self.dbSpaces[dbId]
         
@@ -243,15 +274,7 @@ class ImgDB:
             newid = dbSpace.lastId
             
         newid = long(newid)
-
-        # add per minutes counting
-        dbSpace.addCount += 1
-        if time.localtime()[4] > dbSpace.addMinCur:
-            dbSpace.addMinCur = time.localtime()[4]
-            dbSpace.lastAddPerMin = dbSpace.addMinCount
-        else:
-            dbSpace.addMinCount += 1
-
+        addCount(dbSpace)
        # call imgdb
         res = imgdb.addImage(dbId, newid, fname)
 
@@ -386,10 +409,7 @@ class ImgDB:
         countQuery(dbSpace)
 
         # do query
-        if fast:
-            results = imgdb.queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords)
-        else:
-            results = imgdb.queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords)            
+        results = imgdb.queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords,fast)            
 
         res = normalizeResults(results)
 
@@ -420,9 +440,8 @@ class ImgDB:
     def addKeywordsImg(self,dbId, imgId, hashes):
         return imgdb.addKeywordsImg(dbId, imgId, hashes)
 
-
     @utils.requireKnownDbId
-    def queryImgID(self,dbId,qid,numres,fast = False):
+    def queryImgBlob(self,dbId,data,numres,sketch=0,fast = False):
         dbSpace = self.dbSpaces[dbId]
         
         # return [[resId,resRatio]]
@@ -430,10 +449,39 @@ class ImgDB:
         numres = int(numres) + 1
         countQuery(dbSpace)
         # do query
-        if fast:
-            results = imgdb.queryImgIDFast(dbId,qid,numres)
-        else:
-            results = imgdb.queryImgID(dbId,qid,numres)
+        results = imgdb.queryImgBlob(dbId,data,numres,sketch,fast)
+
+        res = normalizeResults(results)
+
+        log.debug("queryImgBlob() ret="+str(res))        
+        return res
+
+    @utils.requireKnownDbId
+    def queryImgPath(self,dbId,path,numres,sketch=0, fast = False):
+        dbSpace = self.dbSpaces[dbId]
+        
+        # return [[resId,resRatio]]
+        # update internal counters
+        numres = int(numres) + 1
+        countQuery(dbSpace)
+        # do query
+        results = imgdb.queryImgPath(dbId,path,numres,sketch, fast)
+
+        res = normalizeResults(results)
+
+        log.debug("queryImgPath() ret="+str(res))        
+        return res    
+    
+    @utils.requireKnownDbId
+    def queryImgID(self,dbId,qid,numres,sketch=0,fast = False):
+        dbSpace = self.dbSpaces[dbId]
+        
+        # return [[resId,resRatio]]
+        # update internal counters
+        numres = int(numres) + 1
+        countQuery(dbSpace)
+        # do query
+        results = imgdb.queryImgID(dbId,qid,numres,sketch, fast)
 
         res = normalizeResults(results)
 
