@@ -51,6 +51,30 @@ def safe_str(obj):
         # obj is unicode
         return unicode(obj).encode('unicode_escape')
 
+def countQuery(dbSpace):
+    dbSpace.queryCount += 1
+    if time.localtime()[4] > dbSpace.queryMinCur:
+        dbSpace.queryMinCur = time.localtime()[4]
+        dbSpace.lastQueryPerMin = dbSpace.queryMinCount
+    else:
+        dbSpace.queryMinCount += 1
+
+def normalizeResults(results):
+    """ normalize results returned by imgdb """
+
+    res = []
+    for i in range(len(results) / 2):
+        rid = long(results[i*2])
+        rsc = results[i*2+1]
+        rsc = -100.0*rsc/38.70  # normalize #TODO is this normalization factor still valid?
+        #sanity checks
+        if rsc<0:rsc = 0.0
+        if rsc>100:rsc = 100.0
+        res.append([rid,rsc])
+        
+    res.reverse()
+    return res
+
 class DBSpace:
     def __init__(self, id):
         # statistics
@@ -350,7 +374,8 @@ class ImgDB:
     @utils.requireKnownDbId
     def queryImgIDFastKeywords(self,dbId, imgId, numres, kwJoinType, keywords):
         return imgdb.queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords)
-    
+   
+
     @utils.requireKnownDbId
     def queryImgIDKeywords(self,dbId, imgId, numres, kwJoinType, keywords, fast=False):
         dbSpace = self.dbSpaces[dbId]
@@ -358,12 +383,7 @@ class ImgDB:
         # return [[resId,resRatio]]
         # update internal counters
         numres = int(numres) + 1
-        dbSpace.queryCount += 1
-        if time.localtime()[4] > dbSpace.queryMinCur:
-            dbSpace.queryMinCur = time.localtime()[4]
-            dbSpace.lastQueryPerMin = dbSpace.queryMinCount
-        else:
-            dbSpace.queryMinCount += 1
+        countQuery(dbSpace)
 
         # do query
         if fast:
@@ -371,17 +391,8 @@ class ImgDB:
         else:
             results = imgdb.queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords)            
 
-        res = []
-        for i in range(len(results) / 2):
-            rid = long(results[i*2])
-            rsc = results[i*2+1]
-            rsc = -100.0*rsc/38.70  # normalize #TODO is this normalization factor still valid?
-            #sanity checks
-            if rsc<0:rsc = 0
-            if rsc>100:rsc = 100
-            res.append([rid,rsc])
-            
-        res.reverse()
+        res = normalizeResults(results)
+
         log.debug("queryImgIDKeywords() ret="+str(res))
         return res
 
@@ -409,6 +420,7 @@ class ImgDB:
     def addKeywordsImg(self,dbId, imgId, hashes):
         return imgdb.addKeywordsImg(dbId, imgId, hashes)
 
+
     @utils.requireKnownDbId
     def queryImgID(self,dbId,qid,numres,fast = False):
         dbSpace = self.dbSpaces[dbId]
@@ -416,29 +428,14 @@ class ImgDB:
         # return [[resId,resRatio]]
         # update internal counters
         numres = int(numres) + 1
-        dbSpace.queryCount += 1
-        if time.localtime()[4] > dbSpace.queryMinCur:
-            dbSpace.queryMinCur = time.localtime()[4]
-            dbSpace.lastQueryPerMin = dbSpace.queryMinCount
-        else:
-            dbSpace.queryMinCount += 1
-
+        countQuery(dbSpace)
         # do query
         if fast:
             results = imgdb.queryImgIDFast(dbId,qid,numres)
         else:
             results = imgdb.queryImgID(dbId,qid,numres)
 
-        res = []
-        for i in range(len(results) / 2):
-            rid = long(results[i*2])
-            rsc = results[i*2+1]
-            rsc = -100.0*rsc/38.70  # normalize
-            #sanity checks
-            if rsc<0:rsc = 0
-            if rsc>100:rsc = 100.0
-            res.append([rid,rsc])
-            
-        res.reverse()
+        res = normalizeResults(results)
+
         log.debug("queryImgID() ret="+str(res))        
         return res

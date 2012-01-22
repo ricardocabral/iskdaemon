@@ -940,7 +940,7 @@ long_list_2 clusterSim(const int dbId, float thresd, int fast = 0) {
 	return res;
 }
  */
-
+//TODO add parm for query tweaking (sketch?)
 std::vector<double> queryImgID(const int dbId, long int id, int numres) {
 	/*query for images similar to the one that has this id
 	numres is the maximum number of results

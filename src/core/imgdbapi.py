@@ -57,7 +57,7 @@ rootLog.info('| image database initialized')
 #@memoize.simple_memoized
 def queryImgID(dbId, id, numres=12, fast=False):
     """
-    Return the most similar images to the supplied one.
+    Return the most similar images to the supplied one. The supplied image must be already indexed, and is referenced by its ID.
 
     @type  dbId: number
     @param dbId: Database space id.
@@ -89,6 +89,46 @@ def queryImgID(dbId, id, numres=12, fast=False):
                     break
     # no remote peer has this image, try locally
     return imgDB.queryImgID(dbId, id, numres)
+
+def queryImgData(dbId, data, numres=12, fast=False):
+    """
+    Return the most similar images to the supplied one. The target image is specified by its raw binary file data. Most common formats are supported.
+
+    @type  dbId: number
+    @param dbId: Database space id.
+    @type  data: binary data
+    @param data: Target image file binary data.
+    @type  numres: number
+    @param numres: Number of results to return. The target image is on the result list.
+    @rtype:   array
+    
+    @since: 0.9.3
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    """    
+    dbId = int(dbId)
+    numres = int(numres)
+    
+    return imgDB.queryImgData(dbId, data, numres)
+
+def queryImgPath(dbId, path, numres=12, fast=False):
+    """
+    Return the most similar images to the supplied one. The target image is specified using it's full path on the server disk.
+
+    @type  dbId: number
+    @param dbId: Database space id.
+    @type  path: string
+    @param path: Target image pth on the server disk.
+    @type  numres: number
+    @param numres: Number of results to return. The target image is on the result list.
+    @rtype:   array
+    
+    @since: 0.9.3
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    """    
+    dbId = int(dbId)
+    numres = int(numres)
+    
+    return imgDB.queryImgPath(dbId, path, numres)
 
 def addImg(dbId, id, filename, fileIsUrl=False):
     """

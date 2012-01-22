@@ -13,12 +13,16 @@ namespace std {
    %template(DoubleVector) vector<double>;   
 }
 
+// query
 std::vector<double> queryImgID(const int dbId, long int id, int numres);
 std::vector<double> queryImgIDFast(const int dbId, long int id, int numres);
 std::vector<double> queryImgData(const int dbId, int * sig1, int * sig2, int * sig3, double *avgl, int numres, int sketch);
 
+// add
 int addImage(const int dbId, const long int id, char* filename);  //TODO should be long long int?
+int addImageBlob(const int dbId, const long int id, const void *blob, const long length);
 
+// db ops
 int savedb(const int dbId, char* filename);
 int loaddb(const int dbId, char* filename);
 int savealldbs(char* filename);
@@ -29,12 +33,13 @@ void initDbase(const int dbId);
 void closeDbase();
 long int getImgCount(const int dbId);
 bool isImageOnDB(const int dbId, long int id);
+
+// image 
 int getImageHeight(const int dbId, long int id);
 int getImageWidth(const int dbId, long int id);
 double calcAvglDiff(const int dbId, long int id1, long int id2);
 double calcDiff(const int dbId, long int id1, long int id2);
 std::vector<double> getImageAvgl(const int dbId, long int id1);
-int addImageBlob(const int dbId, const long int id, const void *blob, const long length);
 std::vector<int> getDBList();
 std::vector<long int> getImgIdList(const int dbId);
 bool isValidDB(const int dbId);
@@ -62,9 +67,9 @@ std::vector<int> getKeywordsPopular(const int dbId, const int numres);
 
 /* cluster list structure */
 typedef struct clustersStruct_{
-  imageId id;			/* representative image id */
-  std::vector<long int> imgIds;	/* img list */
-  double diameter;		
+  imageId id;   /* representative image id */
+  std::vector<long int> imgIds; /* img list */
+  double diameter;
 } clustersStruct;
 
 namespace std {
