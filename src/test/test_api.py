@@ -209,7 +209,18 @@ def testAddImage():
     
 
     #assertEqual(1,server.addImg(1,test_images_dir+"DSC00006.JPG",6,))
- 
+
+class APITest(unittest.TestCase):
+    
+    def setUp(self):
+        self.server = xmlrpclib.ServerProxy(server_url);
+
+    def tearDown(self):
+        pass
+
+    def testGetLog(self):
+        assert len(self.server.getIskLog(2))> 10
+
 if __name__ == '__main__':
     testAddImage()
 

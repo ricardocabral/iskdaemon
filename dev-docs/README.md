@@ -66,6 +66,9 @@ Yum based
 OSX Dev environment
 -------------------
 
+    git config --global user.name "Ricardo Cabral"
+    git config --global user.email "ricardo@isnotworking.com"
+
     sudo port install swig
     sudo port install swig-python
     sudo easy_install twisted
@@ -97,12 +100,26 @@ Ubuntu Dev environment
 Windows
 -------
 
-Install Visual Studio express
-install imagemagick windows, option to include dev headers
+    Install Visual Studio C++ express 2008 http://msdn.microsoft.com/en-us/express/future/bb421473
+        (2010 express doesnt work well with python)
+    Install Git http://code.google.com/p/msysgit/
+    install imagemagick windows, select option to include dev headers:
+        http://www.imagemagick.org/script/binary-releases.php#windows
+        ImageMagick-6.7.4-8-Q16-windows-dll.exe
+    32bit python: http://www.python.org/download/releases/2.7.2/
+    http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
+    http://www.swig.org/download.html
+        copy swigwin into C:\Program Files (x86),  add to PATH
+    checkout using Git UI https://ricardocabral@github.com/ricardocabral/iskdaemon.git
+    add C:\Python27 to PATH
+    launch Visual Studio Command prompt, run C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\Tools\vsvars.bat
+    update imagemagick dir on setup.py (magick_dir)
+    c:\python27\scripts\easy_install twisted
+    this may be needed only on some cases: msvc9compiler.py from python27\distutils had to remove linker switch "/EXPORT:" (was getting "unresolved external initimgdb")
+    http://nsis.sourceforge.net/Download
+    http://www.pyinstaller.org/
 
-msvc9compiler.py from python27\distutils had to remove linker switch "/EXPORT:" (was getting "unresolved external initimgdb")
-
-ubuntu packaging
+Ubuntu packaging
 ----------------
 
 https://wiki.ubuntu.com/PackagingGuide/Complete

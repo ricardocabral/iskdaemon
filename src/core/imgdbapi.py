@@ -782,6 +782,21 @@ def isValidDb(dbId):
     dbId = int(dbId)
     return imgDB.isValidDB(dbId)
 
+def getIskLog(window = 30):
+    """
+    Returns the last lines of text in the iskdaemon instance log
+
+    @type  window: number
+    @param window: number of lines to retrieve 
+
+    @rtype:   string
+    @return:  text block
+    @since: 0.9.3
+    """
+    from utils import tail
+    
+    return tail(open(settings.core.get('daemon','logPath')), window)
+
 CommonDatabaseFacadeFunctions = [
                                  queryImgID,
                                  addImg,
@@ -823,6 +838,7 @@ CommonDatabaseFacadeFunctions = [
                                  getClusterKeywords,
                                  getIdsBloomFilter,     
                                  mostPopularKeywords,                                                             
+                                 getIskLog,
                                     ]
 
 

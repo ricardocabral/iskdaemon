@@ -2,6 +2,7 @@ include *.txt
 include *.nsi
 include *.conf
 include *.spec
+include test*
 recursive-include api-docs *
 recursive-include test *
 

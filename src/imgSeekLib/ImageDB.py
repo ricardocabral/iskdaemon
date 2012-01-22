@@ -188,6 +188,9 @@ class ImgDB:
         
         addedCount = 0
         dbSpace = self.dbSpaces[dbId]
+        if not os.path.isdir(path):
+            log.error("'%s' does not exist or is not a directory"%path)
+            return 0
         for fil in os.listdir(path):
             fil = safe_str(fil)
             fil = path + os.sep + fil 
