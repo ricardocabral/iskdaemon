@@ -36,8 +36,9 @@ IMagCLib = []
 extra_compile_args = ["-DImMagick"]
 
 if os.name == 'nt': # windows
-    library_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\lib"]
-    include_dirs = ["C:\\Program Files\\ImageMagick-6.7.4-Q16\\include"]
+    magick_dir = 'C:\Program Files (x86)\ImageMagick-6.7.4-Q16'
+    library_dirs = [magick_dir + "\\lib"]
+    include_dirs = [magick_dir + "\\include"]
     libraries = ["CORE_RL_Magick++_","CORE_RL_magick_"]
     extra_compile_args += ["-DWIN32"]
     extra_compile_args += ["-D__WIN32__"]
