@@ -20,8 +20,6 @@
  */
 package net.imgseek.server.demo.server;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,8 +28,6 @@ import net.imgseek.server.demo.client.IskDemoService;
 import net.imgseek.server.demo.shared.DbImageResult;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -43,23 +39,13 @@ public class IskDemoServiceImpl extends RemoteServiceServlet implements
 		IskDemoService {
 
 	private static final int DB_NUM_IMGS = 30607; // total number of images on
-													// DB. Used for quickly
-													// selecting random ids
-	private XmlRpcClient client;
-	private ImageDb imgIdDb = new ImageDb();
+	private IskDaemonClient iskClient = new IskDaemonClient();
 	private Random generator;
+	private ImageDb imgIdDb = new ImageDb();
 
-	public IskDemoServiceImpl() throws MalformedURLException {
+	public IskDemoServiceImpl() {
 		super();
 
-		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		config.setServerURL(new URL("http://127.0.0.1:31128/RPC")); // isk-daemon
-																	// XML-RPC
-																	// endpoint
-																	// URL
-		config.setEnabledForExtensions(true);
-		client = new XmlRpcClient();
-		client.setConfig(config);
 		generator = new Random(1958027);
 
 	}
@@ -83,7 +69,7 @@ public class IskDemoServiceImpl extends RemoteServiceServlet implements
 			// searching by default on DB Space 1
 			Object[] params = new Object[] { 1, (int) id, numres, fast };
 			try {
-				Object[] result = (Object[]) client.execute("queryImgID",
+				Object[] result = (Object[]) iskClient.client.execute("queryImgID",
 						params);
 				for (Object res : result) {
 					Object[] r = (Object[]) res;

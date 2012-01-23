@@ -20,6 +20,13 @@
  */
 package net.imgseek.server.demo.client;
 
+import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploader;
+import gwtupload.client.IUploader.OnFinishUploaderHandler;
+import gwtupload.client.IUploader.UploadedInfo;
+import gwtupload.client.MultiUploader;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import net.imgseek.server.demo.shared.DbImageResult;
@@ -46,6 +53,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 	private static final int GRID_COLS = 4;
 	private static final int NUMRES = 12;
+	private static final NumberFormat df = NumberFormat.getFormat("#.##");
 
 	/**
 	 * Create a remote service proxy to talk to the server-side Isk service.
@@ -54,6 +62,28 @@ public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 			.create(IskDemoService.class);
 
 	private final Grid resultsGrid = new Grid(3, GRID_COLS);
+	private final MultiUploader uploaderControl = new MultiUploader();
+
+	private OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() {
+		public void onFinish(IUploader uploader) {
+			if (uploader.getStatus() == Status.SUCCESS) {
+				// The server sends useful information to the client by default
+				UploadedInfo info = uploader.getServerInfo();
+				List<DbImageResult> result = new ArrayList<DbImageResult>();
+				String ps[] = info.message.split(";");
+
+				for (int i = 0; i < ps.length / 3; i++) {
+					DbImageResult nr = new DbImageResult();
+					nr.setId(Integer.parseInt(ps[i * 3]));
+					nr.setScore(Double.parseDouble(ps[i * 3 + 1]));
+					nr.setUrl(ps[i * 3 + 2]);
+					result.add(nr);
+				}
+				showResults(result);
+				uploaderControl.reset();
+			}
+		}
+	};
 
 	/**
 	 * This is the entry point method.
@@ -63,10 +93,19 @@ public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 		RootPanel.get("main").add(mvp);
 		HorizontalPanel hhp = new HorizontalPanel();
 		mvp.add(hhp);
-		hhp.add(new HTML("<h1>isk-daemon example</h1>"));
+		hhp.add(new HTML("<h2>isk-daemon example</h2>"));
 		hhp.add(new HTML(
-				"<p><a href=http://server.imgseek.net/>isk-daemon</a> is an open source database server capable of adding content-based (visual) image searching to any image related website or software. Click on the '+ similar' link below each image to search by visual similarity. See <a href='http://www.imgseek.net/isk-daemon/demo'>more details</a> about this demo, including source code.</p>"));
+				"<p><a href=http://server.imgseek.net/>isk-daemon</a> is an open source database server capable of adding content-based (visual) image searching to any image related website or software. Click on the '+ similar' link below each image to search by visual similarity. You can also upload your own image by clicking on the 'Choose file' button below. See <a href='http://www.imgseek.net/isk-daemon/demo'>more details</a> about this demo, including source code.</p>"));
 		hhp.add(new Hyperlink("Random images", "similar-0"));
+
+		// Create a new uploader panel and attach it to the document
+
+		uploaderControl.setAutoSubmit(true);
+		mvp.add(uploaderControl);
+
+		// Add a finish handler which will load the image once the upload
+		// finishes
+		uploaderControl.addOnFinishUploadHandler(onFinishUploaderHandler);
 
 		mvp.add(resultsGrid);
 		mvp.add(new HTML(
@@ -83,6 +122,27 @@ public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 		History.fireCurrentHistoryState();
 	}
 
+	private void showResults(List<DbImageResult> result) {
+		resultsGrid.clear();
+		int i = 0;
+
+		for (DbImageResult res : result) {
+			VerticalPanel rvp = new VerticalPanel();
+			rvp.setStyleName("dotted");
+			rvp.add(new Image(res.getUrl()));
+			HorizontalPanel hc = new HorizontalPanel();
+			String scoreLabel = "(random) ";
+			if (res.getScore() > 0)
+				scoreLabel = df.format(res.getScore()) + "%";
+			hc.add(new Label(scoreLabel));
+			hc.add(new Hyperlink("   + similar", "similar-" + res.getId()));
+			rvp.add(hc);
+
+			resultsGrid.setWidget(i / GRID_COLS, i % GRID_COLS, rvp);
+			i++;
+		}
+	}
+
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
 		int tid = 0;
@@ -92,8 +152,6 @@ public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 			e.printStackTrace();
 		}
 
-		final NumberFormat df = NumberFormat.getFormat("#.##");
-
 		iskDemoService.queryImgID(tid, NUMRES, false,
 				new AsyncCallback<List<DbImageResult>>() {
 					public void onFailure(Throwable caught) {
@@ -101,27 +159,9 @@ public class Iskdaemon_demo implements EntryPoint, ValueChangeHandler<String> {
 					}
 
 					public void onSuccess(List<DbImageResult> result) {
-						resultsGrid.clear();
-						int i = 0;
-
-						for (DbImageResult res : result) {
-							VerticalPanel rvp = new VerticalPanel();
-							rvp.setStyleName("dotted");
-							rvp.add(new Image(res.getUrl()));
-							HorizontalPanel hc = new HorizontalPanel();
-							String scoreLabel = "(random) ";
-							if (res.getScore() > 0)
-								scoreLabel = df.format(res.getScore()) + "%";
-							hc.add(new Label(scoreLabel));
-							hc.add(new Hyperlink("   + similar", "similar-"
-									+ res.getId()));
-							rvp.add(hc);
-
-							resultsGrid.setWidget(i / GRID_COLS, i % GRID_COLS,
-									rvp);
-							i++;
-						}
+						showResults(result);
 					}
+
 				});
 	}
 }

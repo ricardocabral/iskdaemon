@@ -238,6 +238,7 @@ class ImgDB:
         return addedCount        
 
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def removeDb(self, dbId):
         if imgdb.removedb(dbId):
             del self.dbSpaces[dbId]
@@ -245,6 +246,7 @@ class ImgDB:
         return False
 
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def addImageBlob(self, dbId, data, newid = None):
         dbSpace = self.dbSpaces[dbId]
         
@@ -267,6 +269,7 @@ class ImgDB:
         return res
 
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def addImage(self, dbId, fname,newid = None):
         dbSpace = self.dbSpaces[dbId]
         
@@ -371,6 +374,7 @@ class ImgDB:
         return self.dbSpaces[dbId].lastAddPerMin
 
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def addKeywordImg(self, dbId, imgId, hash):
         return imgdb.addKeywordImg(dbId, imgId, hash)
 
@@ -397,7 +401,6 @@ class ImgDB:
     @utils.requireKnownDbId
     def queryImgIDFastKeywords(self,dbId, imgId, numres, kwJoinType, keywords):
         return imgdb.queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords)
-   
 
     @utils.requireKnownDbId
     def queryImgIDKeywords(self,dbId, imgId, numres, kwJoinType, keywords, fast=False):
@@ -429,14 +432,17 @@ class ImgDB:
         return res
     
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def removeAllKeywordImg(self,dbId, imgId):
         return imgdb.removeAllKeywordImg(dbId, imgId)
     
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def removeKeywordImg(self,dbId, imgId, hash):
         return imgdb.removeKeywordImg(dbId, imgId, hash)
     
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def addKeywordsImg(self,dbId, imgId, hashes):
         return imgdb.addKeywordsImg(dbId, imgId, hashes)
 
@@ -457,6 +463,7 @@ class ImgDB:
         return res
 
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def queryImgPath(self,dbId,path,numres,sketch=0, fast = False):
         dbSpace = self.dbSpaces[dbId]
         
@@ -473,6 +480,7 @@ class ImgDB:
         return res    
     
     @utils.requireKnownDbId
+    @utils.dumpArgs    
     def queryImgID(self,dbId,qid,numres,sketch=0,fast = False):
         dbSpace = self.dbSpaces[dbId]
         

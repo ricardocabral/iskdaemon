@@ -116,7 +116,7 @@ def queryImgBlob(dbId, data, numres=12, sketch=0, fast=False):
     dbId = int(dbId)
     numres = int(numres)
     
-    return imgDB.queryImgBlob(dbId, data, numres,sketch,fast)
+    return imgDB.queryImgBlob(dbId, data.data, numres,sketch,fast)
 
 def queryImgPath(dbId, path, numres=12, sketch=0, fast=False):
     """
