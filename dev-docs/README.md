@@ -1,11 +1,12 @@
 Release checklist
 -----------------
 
-    sed -i '' -e's/iskVersion = \"0.9.1\"/iskVersion = \"0.9.2\"/' core/imgdbapi.py 
-    sed -i '' -e's/0.9.1/0.9.2/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
+    cd ~/Projects/iskdaemon/src
+    sed -i '' -e's/iskVersion = \"0.9.2\"/iskVersion = \"0.9.3\"/' core/imgdbapi.py 
+    sed -i '' -e's/0.9.2/0.9.3/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
     sed -i '' -e's/Jan 2012/Jan 2012/' ui/admin-gwt/src/net/imgseek/server/admin/client/Iskdaemon_admin.java
-    sed -i '' -e's/0.9.1/0.9.2/' setup.py 
-    sed -i '' -e's/0.9/0.9.2/' installer.nsi 
+    sed -i '' -e's/0.9.2/0.9.3/' setup.py 
+    sed -i '' -e's/0.9.2/0.9.3/' installer.nsi 
 
     compile GWT admin ui
 
@@ -17,11 +18,7 @@ Release checklist
     open epyhtml/core.imgdbapi-module.html
     copy/paste to   
     http://www.imgseek.net/isk-daemon/documents-1/api-reference
-
-    python setup.py sdist --formats=gztar,zip register upload
-    #python setup.py register
-    #python setup.py sdist register upload
-    python setup.py bdist
+    edit HTML and remove occurences of core.imgdbapi-module.html
 
     # Windows
     e:
@@ -49,8 +46,13 @@ Release checklist
 
     git commit -a
     git push
-    git tag "v0.9.2"
+    git tag "v0.9.3"
     git push --tags        
+
+    python setup.py sdist --formats=gztar,zip register upload
+    #python setup.py register
+    #python setup.py sdist register upload
+    python setup.py bdist
 
     https://github.com/ricardocabral/iskdaemon/downloads
     git log --pretty=format:%s v0.9.2..

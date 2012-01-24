@@ -225,6 +225,12 @@ class APITest(unittest.TestCase):
         print logs
         assert len(logs)> 10
 
+    def testAddBlob(self):
+        data = open(data_dir+"DSC00007.JPG",'rb').read()
+        assert self.server.addImgBlob(1, 7,xmlrpclib.Binary(data)) 
+
+    #TODO refactor the rest of tests into here
+
 if __name__ == '__main__':
     testAddImage()
-
+    unittest.main()

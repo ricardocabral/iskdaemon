@@ -42,7 +42,7 @@ remoteCache = None    # global remote cache (memcached) singleton
 pbFactory = None     # perspective factory
 daemonStartTime = time.time()
 hasShutdown = False
-iskVersion = "0.9.2"
+iskVersion = "0.9.3"
 
 # misc daemon inits
 rootLog = logging.getLogger('imgdbapi')
@@ -72,7 +72,8 @@ def queryImgID(dbId, id, numres=12, sketch=0, fast=False):
 
     @rtype:   array
     @since: 0.7
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    @change: 0.9.3: added parameter 'sketch'
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]} (id is Integer, score is Double)
     """    
     dbId = int(dbId)
     id = int(id)
@@ -111,7 +112,7 @@ def queryImgBlob(dbId, data, numres=12, sketch=0, fast=False):
     @rtype:   array
     
     @since: 0.9.3
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]} (id is Integer, score is Double)
     """    
     dbId = int(dbId)
     numres = int(numres)
@@ -120,7 +121,7 @@ def queryImgBlob(dbId, data, numres=12, sketch=0, fast=False):
 
 def queryImgPath(dbId, path, numres=12, sketch=0, fast=False):
     """
-    Return the most similar images to the supplied one. The target image is specified using it's full path on the server disk.
+    Return the most similar images to the supplied one. The target image is specified using it's full path on the server filesystem.
 
     @type  dbId: number
     @param dbId: Database space id.
@@ -135,14 +136,14 @@ def queryImgPath(dbId, path, numres=12, sketch=0, fast=False):
     @rtype:   array
     
     @since: 0.9.3
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]} (id is Integer, score is Double)
     """    
     dbId = int(dbId)
     numres = int(numres)
     
     return imgDB.queryImgPath(dbId, path, numres,sketch,fast)
 
-def addImgBlob(dbId, id, data, length):
+def addImgBlob(dbId, id, data):
     """
     Add image to database space. Image data is passed directly. It is then processed and indexed. 
 
@@ -152,8 +153,6 @@ def addImgBlob(dbId, id, data, length):
     @param id: Target image id. The image located on filename will be indexed and from now on should be refered to isk-daemon as this supplied id.
     @type  data: binary 
     @param data: Image binary data
-    @type  length: long 
-    @param length: file size (length of data parm) 
     @rtype:   number
     
     @since: 0.9.3
@@ -162,22 +161,15 @@ def addImgBlob(dbId, id, data, length):
     dbId = int(dbId)
     id = int(id)
 
-    if fileIsUrl: # download it first
-        tempFName = os.path.expanduser(settings.core.get('database','databasePath')) + ('_tmp_%d_%d.jpg' % (dbId,id))
-        urlToFile(filename,tempFName)
-        filename = tempFName
-    res = 0
     try:
         #TODO id should be unsigned long int or something even bigger, also must review swig declarations
-        res = imgDB.addImage(dbId, filename, id)
+        res = imgDB.addImageBlob(dbId, data.data, id)
     except Exception, e:
         if str(e) == 'image already in db':
             rootLog.warn(e)        
         else:
             rootLog.error(e)
         return res
-    
-    if (fileIsUrl): os.remove(filename)    
     
     return res
 
@@ -462,7 +454,6 @@ def getDbImgIdList(dbId):
     
     @since: 0.7
     @return:  array of image ids
-    @since: 0.7
     """    
     
     dbId = int(dbId)
@@ -636,7 +627,7 @@ def queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @rtype:   array
     
     @since: 0.7
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]} (id is Integer, score is Double)
     """    
     dbId = int(dbId)
     imgId = int(imgId)
@@ -661,7 +652,7 @@ def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
     @rtype:   array
     
     @since: 0.7
-    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]}
+    @return:  array of arrays: M{[[image id 1, score],[image id 2, score],[image id 3, score], ...]} (id is Integer, score is Double)
     """    
     dbId = int(dbId)
     imgId = int(imgId)
