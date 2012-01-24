@@ -21,11 +21,18 @@ Release checklist
     edit HTML and remove occurences of core.imgdbapi-module.html
 
     # Windows
-    e:
-    cd iskdaemon\src
+    Git shell
+        cd /c/prj/iskdaemon
+        git pull
+    Visual Studio Prompt
+    cd /c/prj/iskdaemon
+    python setup.py build
     rmdir /S /Q dist\isk-daemon
-    ..\3rd\pyinstaller\trunk\pyinstaller.py isk-daemon.spec 
-    "c:\Program Files\NSIS\makensis.exe" installer.nsi
+    python ..\..\pyinstaller\PyInstaller.py isk-daemon.spec   
+    "c:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+    run installer
+    upload installer to https://github.com/ricardocabral/iskdaemon/downloads
+
 
     # Linux
     scp dist/*.gz rnc@192.168.0.108:
@@ -60,6 +67,9 @@ Release checklist
     http://www.imgseek.net/isk-daemon/download
     http://www.imgseek.net/news
     http://freecode.com/
+
+    Notify users on:
+    https://docs.google.com/a/imgseek.net/spreadsheet/ccc?key=0Am8ZmW0g7_c-dEFQb3hxOXlwYThMUUJ1VnpjMmRDWWc&hl=en_US#gid=0
 
 Yum based
 ---------
@@ -103,9 +113,17 @@ Ubuntu Dev environment
 Windows
 -------
 
+New dev
+=======
     Install Visual Studio C++ express 2008 http://msdn.microsoft.com/en-us/express/future/bb421473
         (2010 express doesnt work well with python)
     Install Git http://code.google.com/p/msysgit/
+    mkdir /prj
+    cd /prj
+    git clone https://ricardocabral@github.com/ricardocabral/iskdaemon.git
+    git config --global user.name "Ricardo Niederberger Cabral"
+    git config --global user.email "ricardo@isnotworking.com"
+
     install imagemagick windows, select option to include dev headers:
         http://www.imagemagick.org/script/binary-releases.php#windows
         ImageMagick-6.7.4-8-Q16-windows-dll.exe
@@ -120,7 +138,9 @@ Windows
     c:\python27\scripts\easy_install twisted
     this may be needed only on some cases: msvc9compiler.py from python27\distutils had to remove linker switch "/EXPORT:" (was getting "unresolved external initimgdb")
     http://nsis.sourceforge.net/Download
-    http://www.pyinstaller.org/
+    http://www.pyinstaller.org/  (just extract on a folder)
+    http://sourceforge.net/projects/pywin32/files/pywin32/
+    http://nsis.sourceforge.net/NSIS_Simple_Service_Plugin
 
 Ubuntu packaging
 ----------------

@@ -59,16 +59,16 @@ ShowUnInstDetails show
 
 Section "MainSection" SEC01
 
+  DetailPrint "Stopping service..."
+  ; Stop a service and waits for file release
+  SimpleSC::StopService "iskdaemon" 1 60
+  Pop $0 ; returns an errorcode (<>0) otherwise success (0)
+
   SetOutPath "$INSTDIR"
   SetOverwrite try
   File /r "dist\isk-daemon\*"
 
   MessageBox MB_YESNO "Install and run as a Windows service?" /SD IDYES IDNO false2
-
-  DetailPrint "Stopping service..."
-  ; Stop a service and waits for file release
-  SimpleSC::StopService "iskdaemon" 1 60
-  Pop $0 ; returns an errorcode (<>0) otherwise success (0)
 
   DetailPrint "Removing service..."
   ; Remove a service
