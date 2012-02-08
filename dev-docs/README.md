@@ -33,7 +33,6 @@ Release checklist
     run installer
     upload installer to https://github.com/ricardocabral/iskdaemon/downloads
 
-
     # Linux
     scp dist/*.gz rnc@192.168.0.108:
     scp dist/*.gz rnc@192.168.0.107:
@@ -57,14 +56,14 @@ Release checklist
     git push --tags        
 
     python setup.py sdist --formats=gztar,zip register upload
-    #python setup.py register
-    #python setup.py sdist register upload
     python setup.py bdist
 
     https://github.com/ricardocabral/iskdaemon/downloads
     git log --pretty=format:%s v0.9.2..
     http://www.imgseek.net/isk-daemon/changelog
     http://www.imgseek.net/isk-daemon/download
+    post to imgseek_dev@googlegroups.com, imgseek_users@googlegroups.com
+        [Release] isk-daemon 0.9.3
     http://www.imgseek.net/news
     http://freecode.com/
 
