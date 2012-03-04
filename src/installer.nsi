@@ -119,8 +119,9 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   
-  ExecShell open "https://docs.google.com/a/imgseek.net/spreadsheet/viewform?formkey=dEFQb3hxOXlwYThMUUJ1VnpjMmRDWWc6MQ"
+  ExecShell open "http://eepurl.com/jKmUP"
   ExecShell open "http://127.0.0.1:31128/"
+
 SectionEnd
 
 
