@@ -2,7 +2,7 @@
     imgSeek ::  Haar 2d transform implemented in C/C++ to speed things up
                              -------------------
     begin                : Fri Jan 17 2003
-    email                : nieder|at|mail.ru
+    email                : ricardo.cabral|at|imgseek.net
     Time-stamp:            <05/01/30 19:58:56 rnc>
     ***************************************************************************
     *    Wavelet algorithms, metric and query ideas based on the paper        *

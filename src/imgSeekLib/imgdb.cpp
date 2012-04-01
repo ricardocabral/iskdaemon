@@ -2,7 +2,7 @@
 imgSeek ::  C++ database implementation
 ---------------------------------------
 begin                : Fri Jan 17 2003
-email                : nieder|at|mail.ru
+email                : ricardo.cabral|at|imgseek.net
 
 Copyright (C) 2003-2009 Ricardo Niederberger Cabral
 
