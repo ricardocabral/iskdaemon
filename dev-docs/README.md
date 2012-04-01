@@ -69,6 +69,7 @@ Release checklist
 
     Notify users on:
     https://docs.google.com/a/imgseek.net/spreadsheet/ccc?key=0Am8ZmW0g7_c-dEFQb3hxOXlwYThMUUJ1VnpjMmRDWWc&hl=en_US#gid=0
+        with MailChimp
 
 Yum based
 ---------
