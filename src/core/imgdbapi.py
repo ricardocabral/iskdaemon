@@ -397,7 +397,11 @@ def calcImgAvglDiff(dbId, id1, id2):
 
 def calcImgDiff(dbId, id1,  id2):
     """
-    Return image similarity difference ratio
+    Return image similarity difference ratio. One value alone for an image pair doesn't mean much. These values should be compared pairwise against each other. 
+    
+    The smaller the value between two images is (i.e. the more negative the value is), the more similar the 2 images are.
+
+    Comparing one image against itself is a degenerate case and the value returned should be ignored.
 
     @type  dbId: number
     @param dbId: Database space id.
