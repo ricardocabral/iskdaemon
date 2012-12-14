@@ -434,7 +434,7 @@ def getImgAvgl(dbId, id):
     @return:  values for YIQ color channels
     """    
     dbId = int(dbId)
-    id1 = int(id1)
+    id1 = int(id)
     return imgDB.getImageAvgl(dbId, id1)
 
 def getDbList():
