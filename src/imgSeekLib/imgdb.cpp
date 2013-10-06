@@ -724,22 +724,15 @@ std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2,
 
 	vector<double> V;
 
+	pqResults.push(*(*sit).second);
+	sit++;
+
 	// Fill up the numres-bounded priority queue (largest at top):
-	for (int cnt = 0; cnt < numres; cnt++) {
-		if (sit == dbSpace[dbId]->sigs.end()) {
-			// No more images; cannot get requested numres, so just return these initial ones.
-			return V;
-		}
-		pqResults.push(*(*sit).second);
-		sit++;
-	}
-
-
 	for (; sit != dbSpace[dbId]->sigs.end(); sit++) {
 		// only consider if not ignored due to keywords and if is a better match than the current worst match
-		if (((*sit).second->score < 99999) && ((*sit).second->score < pqResults.top().score)) {
+		if ((*sit).second->score < 99999) {
 			// Make room by dropping largest entry:
-			pqResults.pop();
+			if (pqResults.size() >= numres) pqResults.pop();
 			// Insert new entry:
 			pqResults.push(*(*sit).second);
 		}
