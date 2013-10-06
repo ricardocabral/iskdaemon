@@ -27,6 +27,7 @@ import os
 import atexit
  
 # isk-daemon imports
+from threading import Lock
 from core import settings
 from core.imgdbapi import *
 from core.facades import *
@@ -67,6 +68,8 @@ def startIskDaemon():
     from twisted.spread import pb
     from twisted.internet import reactor
     from twisted.internet.error import CannotListenError
+
+    reactor.globalLock = Lock()
 
     # Serve UI
     import ui 
