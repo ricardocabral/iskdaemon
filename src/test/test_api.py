@@ -23,13 +23,14 @@
 ###############################################################################
 
 import xmlrpclib
+import os
 
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("-d", "--datadir", 
                   dest="datadir",
                   help="local data dir",
-                  default='/Users/rnc/Projects/iskdaemon/src/test/data/'
+                  default=os.getcwd()+'/data/'
                     )
 parser.add_option("-s", "--server",
                   dest="server", 
