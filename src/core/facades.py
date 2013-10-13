@@ -26,7 +26,6 @@ from imgdbapi import *
 
 from twisted.web import xmlrpc, resource 
 from twisted.spread import pb
-from twisted.internet import reactor
 
 class XMLRPCIskResource(xmlrpc.XMLRPC):
     """Will be injected with XML-RPC remote facade methods later"""

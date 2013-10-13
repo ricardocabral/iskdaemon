@@ -52,7 +52,6 @@ imgDB.loadalldbs(os.path.expanduser(settings.core.get('database', 'databasePath'
 
 rootLog.info('| image database initialized')
 
-from twisted.internet import reactor
 
 ############ Common functions for all comm backends
 #@memoize.simple_memoized
@@ -93,14 +92,8 @@ def queryImgID(dbId, id, numres=12, sketch=0, fast=False):
                     #self.peerFailed(e,iskClient)
                     rootLog.error(e)
                     break
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.queryImgID(dbId, id, numres,sketch,fast)
-    finally:
-        reactor.globalLock.release()
     # no remote peer has this image, try locally
-    return result
+    return imgDB.queryImgID(dbId, id, numres,sketch,fast)
 
 def queryImgBlob(dbId, data, numres=12, sketch=0, fast=False):
     """
@@ -123,15 +116,8 @@ def queryImgBlob(dbId, data, numres=12, sketch=0, fast=False):
     """    
     dbId = int(dbId)
     numres = int(numres)
-
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.queryImgBlob(dbId, data.data, numres,sketch,fast)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    
+    return imgDB.queryImgBlob(dbId, data.data, numres,sketch,fast)
 
 def queryImgPath(dbId, path, numres=12, sketch=0, fast=False):
     """
@@ -155,14 +141,7 @@ def queryImgPath(dbId, path, numres=12, sketch=0, fast=False):
     dbId = int(dbId)
     numres = int(numres)
     
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.queryImgPath(dbId, path, numres,sketch,fast)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    return imgDB.queryImgPath(dbId, path, numres,sketch,fast)
 
 def addImgBlob(dbId, id, data):
     """
@@ -182,19 +161,16 @@ def addImgBlob(dbId, id, data):
     dbId = int(dbId)
     id = int(id)
 
-    reactor.globalLock.acquire()
-    res = None
     try:
         #TODO id should be unsigned long int or something even bigger, also must review swig declarations
         res = imgDB.addImageBlob(dbId, data.data, id)
     except Exception, e:
         if str(e) == 'image already in db':
-            rootLog.warn(e)
+            rootLog.warn(e)        
         else:
             rootLog.error(e)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
+        return res
+    
     return res
 
 def addImg(dbId, id, filename, fileIsUrl=False):
@@ -222,20 +198,17 @@ def addImg(dbId, id, filename, fileIsUrl=False):
         urlToFile(filename,tempFName)
         filename = tempFName
     res = 0
-
-    reactor.globalLock.acquire()
     try:
         #TODO id should be unsigned long int or something even bigger, also must review swig declarations
         res = imgDB.addImage(dbId, filename, id)
     except Exception, e:
         if str(e) == 'image already in db':
-            rootLog.warn(e)
+            rootLog.warn(e)        
         else:
             rootLog.error(e)
-    finally:
-        reactor.globalLock.release()
-
-    if (fileIsUrl): os.remove(filename)
+        return res
+    
+    if (fileIsUrl): os.remove(filename)    
     
     return res
 
@@ -252,15 +225,7 @@ def saveDb(dbId):
     @return:  1 in case of success.
     """        
     dbId = int(dbId)
-
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.savedb(dbId)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    return imgDB.savedb(dbId)
 
 def saveDbAs(dbId, filename):
     """
@@ -276,15 +241,7 @@ def saveDbAs(dbId, filename):
     @return:  1 in case of success.
     """
     dbId = int(dbId)
-
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.savedbas(dbId, filename)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    return imgDB.savedbas(dbId, filename)
 
 def loadDb(dbId, filename):
     """
@@ -316,16 +273,8 @@ def removeImg(dbId, id):
     @return:  1 in case of success.
     """    
     id = int(id)
-    dbId = int(dbId)
-
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.removeImg(dbId, id)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    dbId = int(dbId)    
+    return imgDB.removeImg(dbId, id)
 
 def resetDb(dbId):
     """
@@ -353,14 +302,8 @@ def createDb(dbId):
     @return:  dbId in case of success
     """    
     dbId = int(dbId)
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.createdb(dbId)
-    finally:
-        reactor.globalLock.release()
-    return result
-
+    return imgDB.createdb(dbId)
+    
 def shutdownServer():
     """
     Request a shutdown of this server instance.
@@ -693,16 +636,7 @@ def queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords):
     dbId = int(dbId)
     imgId = int(imgId)
     keywordIds = [int(x) for x in keywords.split(',') if len(x) > 0]
-
-
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    return imgDB.queryImgIDFastKeywords(dbId, imgId, numres, kwJoinType, keywords)
 
 def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
     """
@@ -727,16 +661,7 @@ def queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywords):
     dbId = int(dbId)
     imgId = int(imgId)
     keywordIds = [int(x) for x in keywords.split(',') if len(x) > 0]
-
-
-    reactor.globalLock.acquire()
-    result = None
-    try:
-        result = imgDB.queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywordIds)
-    finally:
-        reactor.globalLock.release()
-    # no remote peer has this image, try locally
-    return result
+    return imgDB.queryImgIDKeywords(dbId, imgId, numres, kwJoinType, keywordIds)
 
 def mostPopularKeywords(dbId, imgs, excludedKwds, count, mode):
     """
