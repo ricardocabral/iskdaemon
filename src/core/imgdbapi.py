@@ -598,6 +598,8 @@ def getAllImgsByKeywords(dbId, numres, kwJoinType, keywords):
 
     @type  dbId: number
     @param dbId: Database space id.
+    @type  numres: number
+    @param numres Number of results desired
     @type  kwJoinType: number
     @param kwJoinType: Logical operator for target keywords: 1 for AND, 0 for OR
     @type  keywords: string
