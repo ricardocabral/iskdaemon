@@ -161,6 +161,13 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
     
 	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx ); return 0; }
 
+	if (dbSpace[dbId]->sigs.count(id)) {
+		cerr << "ERROR: dbId already in use" << endl;
+		pthread_mutex_unlock( &mtx );
+
+		return 0;
+	}
+	
     if (image == (Image *) NULL) {
     	cerr << "ERROR: unable to add null image" << endl;
 	pthread_mutex_unlock( &mtx );
@@ -216,7 +223,7 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 		pixel_cache++;
 	}
 
-    DestroyImage(resize_image);
+	DestroyImage(resize_image);
 
 	transformChar(rchan, gchan, bchan, cdata1, cdata2, cdata3);
 
@@ -227,16 +234,6 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 	nsig->width = width;
 	nsig->height = height;
 
-	if (dbSpace[dbId]->sigs.count(id)) {
-		delete dbSpace[dbId]->sigs[id];
-		dbSpace[dbId]->sigs.erase(id);
-
-		cerr << "ERROR: dbId already in use" << endl;
-		pthread_mutex_unlock( &mtx );
-
-		return 0;
-
-	}
 	// insert into sigmap
 	dbSpace[dbId]->sigs[id] = nsig;
 	// insert into ids bloom filter

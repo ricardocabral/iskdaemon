@@ -69,7 +69,7 @@ def testAddImage():
     
     start_test('save db')
     
-    assert server.saveAllDbs() > 1
+    assert server.saveAllDbs() > 0
     
     start_test('reset db')
     
@@ -134,7 +134,7 @@ def testAddImage():
     
     start_test('save db')
     
-    assert server.saveAllDbs() > 1
+    assert server.saveAllDbs() > 0
     
     start_test('reset db')
     
@@ -143,7 +143,7 @@ def testAddImage():
     
     start_test('load db')
     
-    assert server.loadAllDbs() > 1
+    assert server.loadAllDbs() > 0
     assert server.getDbImgCount(1) == 43
     
     start_test('get keywords')
