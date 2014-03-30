@@ -40,7 +40,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* STL Includes */
 #include <fstream>
 #include <iostream>
-#include <pthread.h>
 
 using namespace std;
 /* ImageMagick includes */
@@ -57,7 +56,6 @@ using namespace std;
 // Globals
 dbSpaceMapType dbSpace;
 keywordsMapType globalKwdsMap;
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
 /* Fixed weight mask for pixel positions (i,j).
 Each entry x = i*NUM_PIXELS + j, gets value max(i,j) saturated at 5.
@@ -105,20 +103,18 @@ void initDbase(const int dbId) {
 	/* should be called before adding images */
 	if (!imgBinInited) initImgBin();
 
-	pthread_mutex_lock( &mtx );
 	if (dbSpace.count(dbId))  { // db id already used?
 		cerr << "ERROR: dbId already in use" << endl;
 		return;
 	}
-	pthread_mutex_unlock( &mtx );
 	dbSpace[dbId] = new dbSpaceStruct();
 }
 
 void closeDbase() {
 	/* should be called before exiting app */
 	for (dpspaceIterator it = dbSpace.begin(); it != dbSpace.end(); it++) {
-	    resetdb((*it).first);
-            delete (*it).second;
+		resetdb((*it).first);
+        delete (*it).second;
 	}
 }
 
@@ -157,21 +153,15 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 	doThumb should be set to 1 if you want to save the thumbnail on thname
 	Images with a dimension smaller than ignDim are ignored
 	 */
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx ); return 0; }
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return 0; }
 
 	if (dbSpace[dbId]->sigs.count(id)) {
-		cerr << "ERROR: dbId already in use" << endl;
-		pthread_mutex_unlock( &mtx );
-
+		cerr << "ERROR: imgId already in use" << endl;
 		return 0;
 	}
-	
+
     if (image == (Image *) NULL) {
     	cerr << "ERROR: unable to add null image" << endl;
-	pthread_mutex_unlock( &mtx );
-
     	return 0;
     }
 
@@ -202,8 +192,6 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 
 	if (resize_image == (Image *) NULL) {
 		cerr << "ERROR: unable to resize image" << endl;
-		pthread_mutex_unlock( &mtx );
-
 		return 0;
 	}
 
@@ -266,6 +254,8 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 		x = (x - t) ^ -t;
 		dbSpace[dbId]->imgbuckets[2][t][x].push_back(id);
 
+		should not fail
+
 #else //FAST_POW_GEERT
 		//long_array3 imgbuckets = dbSpace[dbId]->imgbuckets;
 		if (nsig->sig1[i]>0) dbSpace[dbId]->imgbuckets[0][0][nsig->sig1[i]].push_back(id);
@@ -280,7 +270,6 @@ int addImageFromImage(const int dbId, const long int id, Image * image ) {
 #endif //FAST_POW_GEERT
 
 	}
-	pthread_mutex_unlock( &mtx );
 
 	// success after all
 	return 1;
@@ -416,7 +405,7 @@ int loaddbfromstream(const int dbId, std::ifstream& f, srzMetaDataStruct& md) {
 	}
 }
 
-	srzMetaDataStruct loadGlobalSerializationMetadata(std::ifstream& f) {
+srzMetaDataStruct loadGlobalSerializationMetadata(std::ifstream& f) {
 
 	srzMetaDataStruct md;
 
@@ -554,9 +543,8 @@ int savedbtostream(const int dbId, std::ofstream& f) {
 	 */
 	int sz;
 	long int id;
-	pthread_mutex_lock( &mtx );
 
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx );return 0;}
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return 0;}
 
 	// save buckets
 	for (int c = 0; c < 3; c++) {
@@ -596,7 +584,7 @@ int savedbtostream(const int dbId, std::ofstream& f) {
 			f.write((char *) &(kwid), sizeof(int));
 		}
 	}
-	pthread_mutex_unlock( &mtx );
+
 	return 1;
 }
 
@@ -675,7 +663,7 @@ std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2,
 	int idx, c;
 	int pn;
 	Idx *sig[3] = { sig1, sig2, sig3 };
-	pthread_mutex_lock( &mtx );
+
 	if (bfilter) { // make sure images not on filter are penalized
 		for (sigIterator sit = dbSpace[dbId]->sigs.begin(); sit != dbSpace[dbId]->sigs.end(); sit++) {
 
@@ -757,7 +745,6 @@ std::vector<double> queryImgDataFiltered(const int dbId, Idx * sig1, Idx * sig2,
 		}
 	}
 
-	pthread_mutex_unlock( &mtx );
 	return V;
 }
 
@@ -784,15 +771,10 @@ long_list queryImgDataForThres(const int dbId, sigMap * tsigs,
 		double *avgl, float thresd, int sketch) {
 	int idx, c;
 	int pn;
-	pthread_mutex_lock( &mtx );
 	long_list res;
 	Idx *sig[3] = { sig1, sig2, sig3 };
 
-	if (!validate_dbid(dbId)) { 
-	    cerr << "ERROR: database space not found (" << dbId << ")" << endl; 
-	    pthread_mutex_unlock( &mtx );
-	    return res;
-	}
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return res;}
 
 	for (sigIterator sit = (*tsigs).begin(); sit != (*tsigs).end(); sit++) {
 		(*sit).second->score = 0;
@@ -833,7 +815,6 @@ long_list queryImgDataForThres(const int dbId, sigMap * tsigs,
 			(*tsigs).erase((*sit).second->id);
 		}
 	}
-	pthread_mutex_unlock( &mtx );
 	return res;
 }
 
@@ -841,7 +822,7 @@ long_list queryImgDataForThresFast(sigMap * tsigs, double *avgl, float thresd, i
 
 	// will only look for average luminance
 	long_list res;
-	pthread_mutex_lock( &mtx );
+
 	for (sigIterator sit = (*tsigs).begin(); sit != (*tsigs).end(); sit++) {
 		(*sit).second->score = 0;
 		for (int c = 0; c < 3; c++)
@@ -852,7 +833,6 @@ long_list queryImgDataForThresFast(sigMap * tsigs, double *avgl, float thresd, i
 			(*tsigs).erase((*sit).second->id);
 		}
 	}
-	pthread_mutex_unlock( &mtx );
 	return res;
 }
 
@@ -860,7 +840,7 @@ long_list queryImgDataForThresFast(sigMap * tsigs, double *avgl, float thresd, i
 std::vector<double>  queryImgBlob(const int dbId, const char* data,const long length, int numres,int sketch, bool colorOnly) {
 	ExceptionInfo exception;
 	GetExceptionInfo(&exception);
-	pthread_mutex_lock( &mtx );
+
 	ImageInfo *image_info;
 	image_info = CloneImageInfo((ImageInfo *) NULL);
 
@@ -890,8 +870,7 @@ std::vector<double>  queryImgBlob(const int dbId, const char* data,const long le
 
 	if (resize_image == (Image *) NULL) {
 		cerr << "ERROR: unable to resize image" << endl;
-		pthread_mutex_unlock( &mtx );
-	    	return vector<double>();
+    	return vector<double>();
 	}
 
     // store color value for basic channels
@@ -910,18 +889,17 @@ std::vector<double>  queryImgBlob(const int dbId, const char* data,const long le
 		pixel_cache++;
 	}
 
-	DestroyImage(resize_image);
+    DestroyImage(resize_image);
 
 	transformChar(rchan, gchan, bchan, cdata1, cdata2, cdata3);
 
 	DestroyExceptionInfo(&exception);
 
 	SigStruct *nsig = new SigStruct();
-	//TODO leaking nsig?
+    //TODO leaking nsig?
 	calcHaar(cdata1, cdata2, cdata3,
 			nsig->sig1, nsig->sig2, nsig->sig3, nsig->avgl);
 
-	pthread_mutex_unlock( &mtx );
 	return queryImgData(dbId, nsig->sig1, nsig->sig2, nsig->sig3,
 			nsig->avgl, numres, sketch, colorOnly);
 }
@@ -930,7 +908,7 @@ std::vector<double> queryImgPath(const int dbId, char* path,int numres,int sketc
 
 	ExceptionInfo exception;
 	GetExceptionInfo(&exception);
-	pthread_mutex_lock( &mtx );
+
 	ImageInfo *image_info;
 	image_info = CloneImageInfo((ImageInfo *) NULL);
 	(void) strcpy(image_info->filename, path);
@@ -940,10 +918,9 @@ std::vector<double> queryImgPath(const int dbId, char* path,int numres,int sketc
 	DestroyExceptionInfo(&exception);
 
 	if (image == (Image *) NULL) {
-	    cerr << "ERROR: unable to read image" << endl;
-	    pthread_mutex_unlock( &mtx );
-	    return vector<double>();
-	}
+    	cerr << "ERROR: unable to read image" << endl;
+    	return vector<double>();
+    }
 
 	// Made static for speed; only used locally
 	static Unit cdata1[16384];
@@ -965,9 +942,8 @@ std::vector<double> queryImgPath(const int dbId, char* path,int numres,int sketc
 	DestroyExceptionInfo(&exception);
 
 	if (resize_image == (Image *) NULL) {
-	    cerr << "ERROR: unable to resize image" << endl;
-	    pthread_mutex_unlock( &mtx );
-	    return vector<double>();
+		cerr << "ERROR: unable to resize image" << endl;
+    	return vector<double>();
 	}
 
     // store color value for basic channels
@@ -986,14 +962,17 @@ std::vector<double> queryImgPath(const int dbId, char* path,int numres,int sketc
 		pixel_cache++;
 	}
 
-	DestroyImage(resize_image);
+    DestroyImage(resize_image);
+
 	transformChar(rchan, gchan, bchan, cdata1, cdata2, cdata3);
+
 	DestroyExceptionInfo(&exception);
+
 	SigStruct *nsig = new SigStruct();
+
 	calcHaar(cdata1, cdata2, cdata3,
 			nsig->sig1, nsig->sig2, nsig->sig3, nsig->avgl);
 
-	pthread_mutex_unlock( &mtx );
 	return queryImgData(dbId, nsig->sig1, nsig->sig2, nsig->sig3,
 			nsig->avgl, numres, sketch, colorOnly);
 }
@@ -1004,15 +983,10 @@ std::vector<double> queryImgID(const int dbId, long int id, int numres, int sket
 	/*query for images similar to the one that has this id
 	numres is the maximum number of results
 	 */
-	pthread_mutex_lock( &mtx );
 
 	if (id == -1) { // query random images
 		vector<double> Vres;
-		if (!validate_dbid(dbId)) { 
-		    cerr << "ERROR: database space not found (" << dbId << ")" << endl; 
-		    pthread_mutex_unlock( &mtx );
-		    return Vres;
-		}
+		if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return Vres;}
 		long int sz = dbSpace[dbId]->sigs.size();
 		int_hashset includedIds;
 		sigIterator it = dbSpace[dbId]->sigs.begin();
@@ -1033,17 +1007,10 @@ std::vector<double> queryImgID(const int dbId, long int id, int numres, int sket
 				++var;
 			}
 		}
-		pthread_mutex_unlock( &mtx );
 		return Vres;
 	}
 
-	if (!validate_imgid(dbId, id)) {
-	    cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; 
-	    pthread_mutex_unlock( &mtx );
-	    return std::vector<double>();
-	};
-
-	pthread_mutex_unlock( &mtx );
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return std::vector<double>();};
 
 	return queryImgData(dbId, dbSpace[dbId]->sigs[id]->sig1, dbSpace[dbId]->sigs[id]->sig2, dbSpace[dbId]->sigs[id]->sig3,
 			dbSpace[dbId]->sigs[id]->avgl, numres, sketch, colorOnly);
@@ -1060,9 +1027,8 @@ std::vector<double> queryImgIDFiltered(const int dbId, long int id, int numres, 
 }
 
 int removeID(const int dbId, long int id) {
-	pthread_mutex_lock( &mtx );
 
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; pthread_mutex_unlock( &mtx );return 0;};
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return 0;};
 
 	delete dbSpace[dbId]->sigs[id];
 	dbSpace[dbId]->sigs.erase(id);
@@ -1071,21 +1037,19 @@ int removeID(const int dbId, long int id) {
 		for (int pn = 0; pn < 2; pn++)
 			for (int i = 0; i < 16384; i++)
 				dbSpace[dbId]->imgbuckets[c][pn][i].remove(id);
-	pthread_mutex_unlock( &mtx );
 	return 1;
 }
 
 double calcAvglDiff(const int dbId, long int id1, long int id2) {
-	pthread_mutex_lock( &mtx );
 
 	sigMap sigs = dbSpace[dbId]->sigs;
 
 	/* return the average luminance difference */
 
 	// are images on db ?
-	if (!validate_imgid(dbId, id1)) { cerr << "ERROR: image id (" << id1 << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; pthread_mutex_unlock( &mtx );return 0;};
-	if (!validate_imgid(dbId, id2)) { cerr << "ERROR: image id (" << id2 << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; pthread_mutex_unlock( &mtx );return 0;};
-	pthread_mutex_unlock( &mtx );
+	if (!validate_imgid(dbId, id1)) { cerr << "ERROR: image id (" << id1 << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return 0;};
+	if (!validate_imgid(dbId, id2)) { cerr << "ERROR: image id (" << id2 << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return 0;};
+
 	return fabs(sigs[id1]->avgl[0] - sigs[id2]->avgl[0])
 	+ fabs(sigs[id1]->avgl[1] - sigs[id2]->avgl[1])
 	+ fabs(sigs[id1]->avgl[2] - sigs[id2]->avgl[2]);
@@ -1095,14 +1059,12 @@ double calcDiff(const int dbId, long int id1, long int id2)
 {
 	/* use it to tell the content-based difference between two images
 	 */
-	pthread_mutex_lock( &mtx );
 
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx );return 0;}
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return 0;}
 
 	if (!isImageOnDB(dbId,id1) ||
 			!isImageOnDB(dbId,id2)) {
 		cerr << "ERROR: image ids not found" << endl;
-		pthread_mutex_unlock( &mtx );
 		return 0;
 	}
 
@@ -1117,7 +1079,7 @@ double calcDiff(const int dbId, long int id1, long int id2)
 			for (int b2 = 0; b2 < NUM_COEFS; b2++)
 				if (sig2[c][b2] == sig1[c][b])
 					diff -= weights[0][imgBin[abs(sig1[c][b])]][c];
-	pthread_mutex_unlock( &mtx );
+
 	return diff;
 }
 
@@ -1128,9 +1090,8 @@ int destroydb(const int dbId) {
 }
 
 int resetdb(const int dbId) {
-	pthread_mutex_lock( &mtx );
 
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx ); return 0;}
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return 0;}
     // first deallocate db memory
 
 	// deallocate all buckets
@@ -1157,7 +1118,7 @@ int resetdb(const int dbId) {
 
  	// finally the reset itself
 	dbSpace[dbId] = new dbSpaceStruct();
-	pthread_mutex_unlock( &mtx ); 
+
 	return 1;
 }
 
@@ -1172,25 +1133,21 @@ bloom_filter* getIdsBloomFilter(const int dbId) {
 }
 
 std::vector<int> getDBList() {
-	pthread_mutex_lock( &mtx );
-    
 	vector<int> ids;
 	for (dpspaceIterator it = dbSpace.begin(); it != dbSpace.end(); it++) {
 		ids.push_back((*it).first);
 	}
-	pthread_mutex_unlock( &mtx ); 
 	return ids;
 }
 
 std::vector<long int> getImgIdList(const int dbId) {
 	vector<long int> ids;
-	pthread_mutex_lock( &mtx );
 
 	// TODO is there a faster way for getting a maps key list and returning a vector from it ?
 	for (sigIterator it = dbSpace[dbId]->sigs.begin(); it != dbSpace[dbId]->sigs.end(); it++) {
 		ids.push_back((*it).first);
 	}
-	pthread_mutex_unlock( &mtx ); 
+
 	return ids;
 }
 
@@ -1210,7 +1167,6 @@ bool removedb(const int dbId) {
 
 // return structure containing filter with all image ids that have this keyword
 keywordStruct* getKwdPostings(int hash) {
-    
 	keywordStruct* nks;
 	if (!globalKwdsMap.count(hash)) { // never seen this keyword, create new postings list
 		nks = new keywordStruct();
@@ -1218,33 +1174,22 @@ keywordStruct* getKwdPostings(int hash) {
 	} else { // already know about it just fetch then
 		nks = globalKwdsMap[hash];
 	}
-
 	return nks;
 }
 
 // keywords in images
 bool addKeywordImg(const int dbId, const int id, const int hash) {
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_imgid(dbId, id)) { 
-	    pthread_mutex_unlock( &mtx ); 
-	    cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; 
-	    return false;
-	};
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return false;};
 
 	// populate keyword postings
 	getKwdPostings(hash)->imgIdsFilter->insert(id);
-	pthread_mutex_unlock( &mtx ); 
 
 	// populate image kwds
 	return dbSpace[dbId]->sigs[id]->keywords.insert(hash).second;
 }
 
 bool addKeywordsImg(const int dbId, const int id, int_vector hashes){
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; pthread_mutex_unlock( &mtx ); 
-return false;};
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return false;};
 
 	// populate keyword postings
 	for (intVectorIterator it = hashes.begin(); it != hashes.end(); it++) {
@@ -1254,51 +1199,33 @@ return false;};
 	// populate image kwds
 	int_hashset& imgKwds = dbSpace[dbId]->sigs[id]->keywords;
 	imgKwds.insert(hashes.begin(),hashes.end());
-	pthread_mutex_unlock( &mtx ); 
-
 	return true;
 }
 
 bool removeKeywordImg(const int dbId, const int id, const int hash){
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; pthread_mutex_unlock( &mtx ); 
- return false;};
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return false;};
 
 	//TODO remove from kwd postings, maybe creating an API method for regenerating kwdpostings filters or
 	// calling it internally after a number of kwd removes
-	// pthread_mutex_unlock( &mtx ); 
-
 	return dbSpace[dbId]->sigs[id]->keywords.erase(hash);
 }
 
 bool removeAllKeywordImg(const int dbId, const int id){
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ;pthread_mutex_unlock( &mtx ); 
- return false;};
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return false;};
 	//TODO remove from kwd postings
 	dbSpace[dbId]->sigs[id]->keywords.clear();
-	pthread_mutex_unlock( &mtx ); 
-
 	return true;
 }
 
 std::vector<int> getKeywordsImg(const int dbId, const int id){
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ;pthread_mutex_unlock( &mtx ); 
- return std::vector<int>();};
+	if (!validate_imgid(dbId, id)) { cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ; return std::vector<int>();};
 	int_hashset& imgKwds = dbSpace[dbId]->sigs[id]->keywords;
 	int_vector ret;
 	ret.insert(ret.end(),imgKwds.begin(),imgKwds.end());
-	pthread_mutex_unlock( &mtx ); 
-
 	return ret;
 }
 
 std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs, std::vector<int> excludedKwds, int count, int mode) {
-	pthread_mutex_lock( &mtx );
 
 	kwdFreqMap freqMap = kwdFreqMap();
 
@@ -1338,29 +1265,21 @@ std::vector<int> mostPopularKeywords(const int dbId, std::vector<long int> imgs,
 		res.push_back(kf.freq);
 		count--;
 	}
-	pthread_mutex_unlock( &mtx ); 
 
 	return res;
 }
 
 // query by keywords
 std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, int kwJoinType, int_vector keywords, bool colorOnly){
-	pthread_mutex_lock( &mtx );
-    
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx ); 
-return std::vector<double>();}
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return std::vector<double>();}
 
 	if ((id != 0) && !validate_imgid(dbId, id)) { // not search random and image doesnt exist
 		cerr << "ERROR: image id (" << id << ") not found on given dbid (" << dbId << ") or dbid not existant" << endl ;
-		pthread_mutex_unlock( &mtx ); 
-
 		return std::vector<double>();
 	}
 
 	if (keywords.size() < 1) { 
 		cerr << "ERROR: At least one keyword must be supplied" << endl ;
-		pthread_mutex_unlock( &mtx ); 
-
 		return std::vector<double>();        
 	} 
 
@@ -1368,17 +1287,17 @@ return std::vector<double>();}
 	intVectorIterator it = keywords.begin();
 	bloom_filter* bf = 0;
 
-        // OR or AND each kwd postings filter to get final filter
-	// start with the first one
-	bf = new bloom_filter(*(getKwdPostings(*it)->imgIdsFilter));
-	it++;
-	for (; it != keywords.end(); it++) { // iterate the rest
-	    if (kwJoinType) { // and'd
-		(*bf) &= *(getKwdPostings(*it)->imgIdsFilter);
-	    } else { // or'd
-		(*bf) |= *(getKwdPostings(*it)->imgIdsFilter);
-	    }
-	}
+    // OR or AND each kwd postings filter to get final filter
+    // start with the first one
+    bf = new bloom_filter(*(getKwdPostings(*it)->imgIdsFilter));
+    it++;
+    for (; it != keywords.end(); it++) { // iterate the rest
+        if (kwJoinType) { // and'd
+            (*bf) &= *(getKwdPostings(*it)->imgIdsFilter);
+        } else { // or'd
+            (*bf) |= *(getKwdPostings(*it)->imgIdsFilter);
+        }
+    }
 
 	if (id == 0) { // random images with these kwds
 
@@ -1404,27 +1323,20 @@ return std::vector<double>();}
 			}
 			++var;
 		}
-		pthread_mutex_unlock( &mtx ); 
 
 		return Vres;
 	}
-	pthread_mutex_unlock( &mtx ); 
-
 	return queryImgIDFiltered(dbId, id, numres, bf, colorOnly);
 
 }
 
 std::vector<long int> getAllImgsByKeywords(const int dbId, const int numres, int kwJoinType, std::vector<int> keywords){
-	pthread_mutex_lock( &mtx );
-	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; pthread_mutex_unlock( &mtx ); 
-return std::vector<long int>();}
+	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return std::vector<long int>();}
 
 	std::vector<long int> res; // holds result of img lists
 
 	if (keywords.size() < 1) {
 		cerr << "ERROR: keywords list must have at least one hash" << endl;
-		pthread_mutex_unlock( &mtx ); 
-
 		return std::vector<long int>();
 	}
 
@@ -1448,12 +1360,9 @@ return std::vector<long int>();}
 		if 	(res.size() >= numres) break; // ok, got enough
 	}
 	delete bf;
-	pthread_mutex_unlock( &mtx ); 
-
 	return res;
 }
 double getKeywordsVisualDistance(const int dbId, int distanceType, std::vector<int> keywords){
-	pthread_mutex_lock( &mtx );
 	if (!validate_dbid(dbId)) { cerr << "ERROR: database space not found (" << dbId << ")" << endl; return 0;}
 
 	throw string("not yet implemented");
