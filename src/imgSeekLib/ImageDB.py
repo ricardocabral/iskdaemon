@@ -227,7 +227,7 @@ class ImgDB:
         for fil in os.listdir(path):
             fil = safe_str(fil)
             fil = path + os.sep + fil 
-            if len(fil) > 4 and fil[-3:].lower() in SUPPORTED_IMG_EXTS:
+            if len(fil) > 4 and fil.split('.')[-1].lower() in SUPPORTED_IMG_EXTS:
                 try:
                     addedCount += self.addImage(dbId, fil, dbSpace.lastId)
                 except RuntimeError, e:
