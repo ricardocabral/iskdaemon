@@ -1,0 +1,4 @@
+Twisted
+simplejson
+fpconst
+SOAPpy
