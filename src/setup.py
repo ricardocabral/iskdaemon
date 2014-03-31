@@ -107,7 +107,7 @@ def find_data_files(d):
 
 print "#################################### Installing"
 setup(name="isk-daemon",
-      version='0.9.4',
+      version='0.9.5',
       description="Server and library for adding content-based (visual) image searching to any image related website or software.",
       long_description=long_description,
       keywords = "imgseek iskdaemon image cbir imagedatabase isk-daemon database searchengine",
