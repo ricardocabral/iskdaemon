@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import ez_setup
-ez_setup.use_setuptools()
 
 from setuptools import setup, find_packages
 
@@ -50,8 +48,8 @@ if os.name == 'nt': # windows
     extra_compile_args += ["-D_MAGICKMOD_"]
 else: # *nix
     hasIMagick=0
-    extra_compile_args += [ "-DLinuxBuild","-g"] 
-    extra_link_args += ["-g"] #TODO-0 remove debug
+    extra_compile_args += [ "-DLinuxBuild","-g"]
+    extra_link_args += ["-g"]
     print "#################################### Check ImageMagick"
     try:
         fnd=0
@@ -99,7 +97,7 @@ config_vars = sysconfig.get_config_vars() #TODO-2 is this really still necessary
 for k, v in config_vars.items():
     if k.count('LD') and str(v).startswith('gcc'):
         config_vars[k] = v.replace('gcc', 'g++')
-            
+
 def find_data_files(d):
     matches = []
     for root, dirnames, filenames in os.walk(d):
@@ -136,7 +134,7 @@ setup(name="isk-daemon",
       license = 'GPLv2',
       packages=['imgSeekLib', 'ui','plugins','core'],
       package_data={'imgSeekLib': ['*.so','*.pyd','*.dll'],
-                    'ui': find_data_files('ui/admin-www'), 
+                    'ui': find_data_files('ui/admin-www'),
                     },
       scripts= ['iskdaemon.py'],
       install_requires = ['Twisted >= 8',
