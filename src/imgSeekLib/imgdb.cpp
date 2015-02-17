@@ -990,7 +990,7 @@ std::vector<double> queryImgID(const int dbId, long int id, int numres, int sket
 		long int sz = dbSpace[dbId]->sigs.size();
 		int_hashset includedIds;
 		sigIterator it = dbSpace[dbId]->sigs.begin();
-		for (int var = 0; var < min(sz, numres); ) { // var goes from 0 to numres
+		for (int var = 0; var < min<unsigned long>(sz, numres); ) { // var goes from 0 to numres
 			long int rint = rand()%(sz);
 			for(int pqp =0; pqp < rint; pqp++) {
 				it ++;
@@ -1313,7 +1313,7 @@ std::vector<double> queryImgIDKeywords(const int dbId, long int id, int numres, 
 
 		vector<double> Vres;
 
-		for (int var = 0; var < min(V.size()/2, numres); ) { // var goes from 0 to numres
+		for (int var = 0; var < min<unsigned long>(V.size()/2, numres); ) { // var goes from 0 to numres
 			int rint = rand()%(V.size()/2);
 			if (V[rint*2] > 0) { // havent added this random result yet
 				Vres.insert(Vres.end(), V[rint*2] );
