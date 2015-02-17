@@ -19,7 +19,31 @@ Key features:
 
 # Install instructions
 
-Installation, usage instructions and more details are available online at http://www.imgseek.net/isk-daemon/documents-1/install-and-usage
+Installation, usage instructions and more details are available online at http://www.imgseek.net/isk-daemon/documents-1/install-and-usage [dead link]
+
+Here are quick guide to build from cloned repo. You may want to ``sudo`` all this commands if you have permission errors.
+
+##Ubuntu Quick Start
+
+This one is tested with Ubuntu 14.12
+
+1. Install prerequisited if they're not on your system already:
+
+    ``apt-get install swig ImageMagick libmagick++-dev python-dev``
+
+2. cd to ./src and run: ``python setup.py install``
+
+##MacOS Quick Start
+
+1. Go to http://brew.sh and install Homebrew
+
+2. Install swig: ``brew install swig``
+
+3. Install ImageMagick: ``brew install ImageMagick``
+
+4. Install pkg-config: ``brew install pkg-config``
+
+5. Cd to ./iskdaemon/src/ and run ``python setup.py install``
 
 # Credits
 
