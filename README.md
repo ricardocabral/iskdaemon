@@ -22,6 +22,7 @@ Key features:
 Installation, usage instructions and more details are available online at http://www.imgseek.net/isk-daemon/documents-1/install-and-usage [dead link]
 
 Here are quick guide to build from cloned repo. You may want to ``sudo`` all this commands if you have permission errors.
+I assume you know how to build from source and have all build tools and libraries installed for your system.
 
 ##Ubuntu Quick Start
 
@@ -35,7 +36,7 @@ This one is tested with Ubuntu 14.12
 
 ##MacOS Quick Start
 
-1. Go to http://brew.sh and install Homebrew
+1. Go to http://brew.sh and install ``Homebrew``
 
 2. Install swig: ``brew install swig``
 
@@ -44,6 +45,8 @@ This one is tested with Ubuntu 14.12
 4. Install pkg-config: ``brew install pkg-config``
 
 5. Cd to ./iskdaemon/src/ and run ``python setup.py install``
+
+Alternatively, you can try it with ``macports``.
 
 # Credits
 
