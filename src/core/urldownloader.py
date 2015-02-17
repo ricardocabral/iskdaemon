@@ -23,9 +23,11 @@
 
 import urllib2
 import settings
+import logging
 
 urlopen = urllib2.urlopen
 Request = urllib2.Request
+rootLog = logging.getLogger('urldownloader')
 
 
 def urlToFile(theurl, destfile):
@@ -56,5 +58,6 @@ def urlData(theurl):
 		handle = urlopen(req, timeout=timeout)  # and open it to return a handle on the url
 		data = handle.read()
 		return data
-	except:
+	except Exception, e:
+		rootLog.error(e)
 		return False
