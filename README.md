@@ -1,10 +1,10 @@
 # About
 
-isk-daemon is an open source database server capable of adding content-based (visual) image searching to any image related website or software.
-
-We‘re looking for ways to improve the adoption of such technology. Please let us know if you can benefit from it and need some help getting it to work for you.
+isk-daemon is an open source database server capable of adding [content-based (visual) image searching](http://en.wikipedia.org/wiki/Content-based_image_retrieval) to any image related website or software.
 
 This technology allows users of any image-related website or software to sketch on a widget which image they want to find and have the website reply to them the most similar images or simply request for more similar photos at each image detail page.
+
+A desktop version of this technology is available as the open-source [imgSeek project](http://sourceforge.net/projects/imgseek/).
 
 # Key features
 
