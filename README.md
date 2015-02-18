@@ -1,4 +1,4 @@
-# What
+# About
 
 isk-daemon is an open source database server capable of adding content-based (visual) image searching to any image related website or software.
 
@@ -6,7 +6,7 @@ We‘re looking for ways to improve the adoption of such technology. Please let 
 
 This technology allows users of any image-related website or software to sketch on a widget which image they want to find and have the website reply to them the most similar images or simply request for more similar photos at each image detail page.
 
-Key features:
+# Key features
 
 * Query for images similar to one already indexed by the database, returning a similarity degree for the images on database that most resemble the target query image;
 * Query for images similar to one described by its signature. A client-side widget may generate such signature from what a user sketched and submit it to the daemon;
@@ -19,10 +19,8 @@ Key features:
 
 # Install instructions
 
-Installation, usage instructions and more details are available online at http://www.imgseek.net/isk-daemon/documents-1/install-and-usage [dead link]
-
-Here are quick guide to build from cloned repo. You may want to ``sudo`` all this commands if you have permission errors.
-I assume you know how to build from source and have all build tools and libraries installed for your system.
+Here is a quick guide to build from a cloned git repo. You may want to ``sudo`` all these commands if you have permission errors.
+I assume you know how to build from source and have all build tools (most are installed on the next steps) and libraries installed for your system.
 
 ##Ubuntu Quick Start
 
@@ -56,7 +54,7 @@ Image loading code is credited to "ImageMagick Studio LLC" and library linkage a
 
 # Support or Donate
 
-Help on improving this software is needed, feel free to submit patches.
+Help on improving this software is needed, feel free to submit patches to either the documentation or code.  Thanks!
 
 Money donations are also welcome:
 
