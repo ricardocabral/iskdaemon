@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 
 # win/linux diffs
 import os
+import subprocess
 
 # reuse README as package long description
 with open('README.txt') as file:
@@ -46,28 +47,33 @@ if os.name == 'nt': # windows
 #    extra_compile_args += ["-DNeedFunctionPrototypes"]
 #    extra_compile_args += ["-D_DLL"]
     extra_compile_args += ["-D_MAGICKMOD_"]
-else: # *nix
+else:  # *nix
     hasIMagick=0
     extra_compile_args += [ "-DLinuxBuild","-g"]
     extra_link_args += ["-g"]
     print "#################################### Check ImageMagick"
     try:
-        fnd=0
-        pathvar=os.environ["PATH"]
-        for pv in split(pathvar,':'):
-            if os.path.exists(pv+'/Magick++-config') or os.path.exists(pv+'Magick++-config'):
-                fnd=1
+        fnd = False
+        pathvar = os.environ["PATH"]
+        for pv in split(pathvar, ':'):
+            if os.path.exists(pv + '/Magick++-config') or os.path.exists(pv + 'Magick++-config'):
+                fnd = True
+                break  # pv now holds directory in which Magick++-config was found
         if fnd:
-            IMagCFlag=os.popen("Magick++-config --cxxflags --cppflags").read()
-            if find(IMagCFlag,"-I") != -1:
-                IMagCFlag=replace(IMagCFlag,"\n"," ")
-                IMagCFlag=split(IMagCFlag,' ')
-                IMagCLib=os.popen("Magick++-config --ldflags --libs").read()
-                IMagCLib=replace(IMagCLib,"\n"," ")
-                IMagCLib=split(IMagCLib,' ')
-                hasIMagick=1
+            #IMagCFlag = os.popen("Magick++-config --cxxflags --cppflags").read()  # That's deprecated now
+            IMagCFlag = subprocess.check_output(["Magick++-config", "--cxxflags", "--cppflags"])
+            if find(IMagCFlag, "-I") != -1:
+                if len(include_dirs) == 0:  # Extract include dir from latter command output and append to include_dirs
+                    include_dirs.append([i[2:] for i in IMagCFlag.split(' ') if i.startswith("-I")][0])
+                IMagCFlag = replace(IMagCFlag, "\n", " ")
+                IMagCFlag = split(IMagCFlag, ' ')
+                IMagCLib = subprocess.check_output(["Magick++-config", "--ldflags", "--libs"])
+                IMagCLib = replace(IMagCLib, "\n", " ")
+                IMagCLib = split(IMagCLib, ' ')
+                hasIMagick = 1
         else:
             print "--- WARNING ---\nUnable to find Magick++-config. Are you sure you have ImageMagick and it's development files installed correctly?"
+
     except:
         traceback.print_exc()
 

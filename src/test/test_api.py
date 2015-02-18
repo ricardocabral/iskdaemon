@@ -23,6 +23,7 @@
 ###############################################################################
 
 import xmlrpclib
+import os
 
 from optparse import OptionParser
 parser = OptionParser()
